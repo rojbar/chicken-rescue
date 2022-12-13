@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 
 import LevelOne from './LevelOne'
+import PreloaderLevelOne from './PreloaderLevelOne'
 
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
@@ -14,9 +15,10 @@ const config: Phaser.Types.Core.GameConfig = {
 		default: 'arcade',
 		arcade: {
 			gravity: { y: 200 },
+			debug: true
 		},
 	},
-	scene: [LevelOne],
+	scene: [PreloaderLevelOne, LevelOne],
 }
 
 export default new Phaser.Game(config)

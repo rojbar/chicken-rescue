@@ -1,37 +1,22 @@
 import Phaser from 'phaser'
+import TextureKeys from './consts/TextureKeys'
 
 export default class LevelOne extends Phaser.Scene {
 	constructor() {
 		super('level-one')
 	}
 
-	preload() {
-		this.load.image('background', 'background/2857_1280x720.jpg')
-		this.load.image('small_wood', 'assets/wood_small_platform.jpg')
-		this.load.image('medium_wood', 'assets/wood_medium_platform.jpg')
-		this.load.image('large_wood', 'assets/wood_large_platform.jpg')
-		this.load.image('wall_wood', 'assets/wall_wood_platform.png')
-		this.load.image('wood_box', 'assets/wood_box.png')
-		this.load.image('wood_box_broken', 'assets/wood_box_broken.png')
-		this.load.image('rake', 'assets/rake.png')
-		this.load.image('collected_egg', 'assets/collected_egg.png')
-		this.load.image('uncollected_egg', 'assets/uncollected_egg.png')
-	}
-
 	create() {
-		this.add.image(0, 0, 'background').setOrigin(0, 0)
-		this.add.image(20,20,'collected_egg').setOrigin(0,0)
-		this.add.image(60,20,'uncollected_egg').setOrigin(0,0)
-		this.add.image(70,620,'small_wood').setOrigin(0,0)
-		this.add.image(300,620,'medium_wood').setOrigin(0,0)
-		this.add.image(600,620,'large_wood').setOrigin(0,0)
-		this.add.image(40,165, 'wood_box').setOrigin(0,0)
-		this.add.image(90,165, 'wood_box_broken').setOrigin(0,0)
-		this.add.image(10,177, 'rake').setOrigin(0,0)
-		this.add.image(0,200, 'wall_wood').setOrigin(0,0)
-
-	
-		
-
+		this.add.image(0, 0, TextureKeys.Background).setOrigin(0, 0)
+		this.add.image(20,20,TextureKeys.CollectedEgg).setOrigin(0,0)
+		this.add.image(60,20,TextureKeys.UncollectedEgg).setOrigin(0,0)
+		this.add.image(70,620,TextureKeys.SmallWoodTile).setOrigin(0,0)
+		this.add.image(300,620,TextureKeys.MediumWoodTile).setOrigin(0,0)
+		this.add.image(600,620,TextureKeys.LargeWoodTile).setOrigin(0,0)
+		this.add.image(40,165, TextureKeys.WoodBox).setOrigin(0,0)
+		this.add.image(90,165, TextureKeys.WoodBoxBreakable).setOrigin(0,0)
+		this.add.image(10,177, TextureKeys.Rake).setOrigin(0,0)
+		this.add.image(0,200, TextureKeys.WallWoodTile).setOrigin(0,0)
 	}
+
 }

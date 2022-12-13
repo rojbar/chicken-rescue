@@ -4,9 +4,12 @@ import LevelOne from './LevelOne'
 
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
-	parent: 'app',
-	width: 1280,
-	height:720,
+	scale:{
+		//mode: Phaser.Scale.FIT, review this option to scale canva
+		parent: 'app',
+		width: 1280,
+		height:720,
+	},
 	physics: {
 		default: 'arcade',
 		arcade: {

@@ -14,10 +14,14 @@ export default class LevelOne extends Phaser.Scene {
 		this.load.image('wood_box', 'assets/wood_box.png')
 		this.load.image('wood_box_broken', 'assets/wood_box_broken.png')
 		this.load.image('rake', 'assets/rake.png')
+		this.load.image('collected_egg', 'assets/collected_egg.png')
+		this.load.image('uncollected_egg', 'assets/uncollected_egg.png')
 	}
 
 	create() {
 		this.add.image(0, 0, 'background').setOrigin(0, 0)
+		this.add.image(20,20,'collected_egg').setOrigin(0,0)
+		this.add.image(60,20,'uncollected_egg').setOrigin(0,0)
 		this.add.image(70,620,'small_wood').setOrigin(0,0)
 		this.add.image(300,620,'medium_wood').setOrigin(0,0)
 		this.add.image(600,620,'large_wood').setOrigin(0,0)

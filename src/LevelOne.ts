@@ -13,6 +13,7 @@ export default class LevelOne extends Phaser.Scene {
 		this.load.image('wall_wood', 'assets/wall_wood_platform.png')
 		this.load.image('wood_box', 'assets/wood_box.png')
 		this.load.image('wood_box_broken', 'assets/wood_box_broken.png')
+		this.load.image('rake', 'assets/rake.png')
 	}
 
 	create() {
@@ -22,7 +23,9 @@ export default class LevelOne extends Phaser.Scene {
 		this.add.image(600,620,'large_wood').setOrigin(0,0)
 		this.add.image(40,165, 'wood_box').setOrigin(0,0)
 		this.add.image(90,165, 'wood_box_broken').setOrigin(0,0)
+		this.add.image(10,177, 'rake').setOrigin(0,0)
 		this.add.image(0,200, 'wall_wood').setOrigin(0,0)
+
 	
 		
 

@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import AnimationKeys from './consts/AnimationKeys'
 import TextureKeys from './consts/TextureKeys'
 
 export default class PreloaderLevelOne extends Phaser.Scene {
@@ -20,10 +21,32 @@ export default class PreloaderLevelOne extends Phaser.Scene {
 		this.load.image(TextureKeys.CollectedEgg, 'assets/collected_egg.png')
 		this.load.image(TextureKeys.UncollectedEgg, 'assets/uncollected_egg.png')
 	
-		// define animations
+		this.load.spritesheet(TextureKeys.Snake, 'enemies/snake_idle.png',{frameWidth: 12,frameHeight: 12,} )
+		this.load.spritesheet(TextureKeys.SnakeDeath, 'enemies/sanke_death.png',{frameWidth:15, frameHeight:16,})
 	}
 
 	create() {
+		// define animations snake
+		this.anims.create({
+			key: AnimationKeys.SnakeIdle,
+			frames: this.anims.generateFrameNumbers(TextureKeys.Snake,{
+				start: 0, 
+				end:9,
+			}),
+			frameRate: 10,
+			repeat: -1,
+		})
+
+		this.anims.create({
+			key: AnimationKeys.SnakeDeath,
+			frames: this.anims.generateFrameNumbers(TextureKeys.SnakeDeath ,{
+				start: 0, 
+				end:9,
+			}),
+			frameRate: 10,
+			repeat: -1,
+		})
+
 		this.scene.start('level-one')
 	}
 }

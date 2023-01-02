@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import AnimationKeys from './consts/AnimationKeys'
 import TextureKeys from './consts/TextureKeys'
 
 export default class LevelOne extends Phaser.Scene {
@@ -9,6 +10,7 @@ export default class LevelOne extends Phaser.Scene {
 
 	platforms!: Phaser.Physics.Arcade.StaticGroup
 	eggs: integer 
+	snakes!: Phaser.GameObjects.Sprite[]
 
 	create() {
 		this.createBackground()
@@ -19,9 +21,18 @@ export default class LevelOne extends Phaser.Scene {
 		this.createEggs()
 		this.createLevelBreakableBoxes()
 		this.createLevelRakes()
+		this.createSnakes()
 	
 	}
 
+	private createSnakes(){
+		//this.snakes.push(this.add.sprite(130,660, TextureKeys.Snake))
+		const a = this.add.sprite(620,688, TextureKeys.Snake)
+		a.setScale(2.5,2.5)
+		a.play(AnimationKeys.SnakeIdle)
+		//a.play(AnimationKeys.SnakeDeath)
+
+	}
 	private initPlatforms(){
 		this.platforms = this.physics.add.staticGroup()
 	}

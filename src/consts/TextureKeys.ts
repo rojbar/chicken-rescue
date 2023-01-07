@@ -10,7 +10,8 @@ enum TextureKeys {
   WoodBoxBreakable = "wood-box-breakable",
   Rake = "rake",
   CollectedEgg = "collected-egg",
-  UncollectedEgg = "uncollected-egg"
+  UncollectedEgg = "uncollected-egg",
+  Rat = 'rat',
 }
 
 export default TextureKeys

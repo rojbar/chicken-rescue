@@ -22,6 +22,7 @@ export default class LevelOne extends Phaser.Scene {
 		this.createLevelBreakableBoxes()
 		this.createLevelRakes()
 		this.createSnakes()
+		this.createRats()
 	
 	}
 
@@ -30,6 +31,14 @@ export default class LevelOne extends Phaser.Scene {
 		const a = this.add.sprite(620,688, TextureKeys.Snake)
 		a.setScale(2.5,2.5)
 		a.play(AnimationKeys.SnakeIdle)
+		//a.play(AnimationKeys.SnakeDeath)
+
+	}
+	private createRats(){
+		//this.snakes.push(this.add.sprite(130,660, TextureKeys.Snake))
+		const b = this.add.sprite(420,558, TextureKeys.Rat)
+		b.setScale(2.5,2.5)
+		b.play(AnimationKeys.RatWalking)
 		//a.play(AnimationKeys.SnakeDeath)
 
 	}

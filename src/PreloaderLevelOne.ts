@@ -22,7 +22,8 @@ export default class PreloaderLevelOne extends Phaser.Scene {
 		this.load.image(TextureKeys.UncollectedEgg, 'assets/uncollected_egg.png')
 	
 		this.load.spritesheet(TextureKeys.Snake, 'enemies/snake_idle.png',{frameWidth: 12,frameHeight: 12,} )
-		this.load.spritesheet(TextureKeys.SnakeDeath, 'enemies/sanke_death.png',{frameWidth:15, frameHeight:16,})
+		this.load.spritesheet(TextureKeys.SnakeDeath, 'enemies/snake_death.png',{frameWidth:15, frameHeight:16,})
+		this.load.atlas(TextureKeys.Rat,'enemies/ratspritesheet.png', 'enemies/ratsprites.json')
 	}
 
 	create() {
@@ -46,6 +47,23 @@ export default class PreloaderLevelOne extends Phaser.Scene {
 			frameRate: 10,
 			repeat: -1,
 		})
+
+		//define animations rat
+		this.anims.create({
+			key: AnimationKeys.RatWalking,
+			frames: this.anims.generateFrameNames(TextureKeys.Rat, { prefix: 'walk', end: 9, zeroPad: 4 }),
+			frameRate: 10, 
+			repeat: -1 }
+		)
+
+		this.anims.create({
+			key: AnimationKeys.RatDeath,
+			frames: this.anims.generateFrameNames(TextureKeys.Rat, { prefix: 'death', end: 9, zeroPad: 4 }),
+			frameRate: 10, 
+			repeat: -1 }
+		)
+
+
 
 		this.scene.start('level-one')
 	}

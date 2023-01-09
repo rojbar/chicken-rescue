@@ -1,4 +1,5 @@
 import TextureKeys from "../consts/TextureKeys";
+import AnimationKeys from "../consts/AnimationKeys";
 
 export class Chicken {
     relatedScene: Phaser.Scene;
@@ -14,6 +15,9 @@ export class Chicken {
 
     create() {
         this.player = this.relatedScene.physics.add.sprite(500, 630, TextureKeys.Chicken);
+        this.player.play(AnimationKeys.ChickenIdle);
+        this.player.setSize(40,30);
+        this.player.setOffset(5, 20);
         this.player.setCollideWorldBounds(true);
     }
 
@@ -22,20 +26,21 @@ export class Chicken {
     }
 
     chickenControls() {
-        if (this.cursors.left.isDown) {
+        if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
+            this.player.setVelocity(0, -350);
+            this.player.play(AnimationKeys.ChickenFlying, true);
+        } else if (this.cursors.left.isDown) {
             this.player.setVelocityX(-160)
             //	this.chicken.anims.play(AnimationKeys.ChickenLeft, true)
         } else if (this.cursors.right.isDown) {
             this.player.setVelocityX(160)
+            this.player.play(AnimationKeys.ChickenWalking, true)
             //	this.chicken.anims.play(AnimationKeys.ChickenRight, true)
-        } else if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
-            this.player.setVelocity(0, -350);
         }
         else {
             this.player.setVelocityX(0)
             //	this.chicken.anims.play(AnimationKeys.ChickenIdle, true)
         }
-    }
-
+    } 
 
 }

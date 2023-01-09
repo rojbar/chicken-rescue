@@ -51,10 +51,16 @@ export default class LevelOne extends Phaser.Scene {
 	private initPlatforms() {
 		this.platforms = this.physics.add.staticGroup()
 		this.physics.add.collider(this.chicken.getPlayer(), this.platforms)
+		this.physics.add.collider(this.eggs, this.platforms)
 	}
 
 	private initEggs() {
 		this.eggs = this.physics.add.group()
+		this.physics.add.collider(this.eggs, this.chicken.getPlayer(), this.collectEgg, undefined, this)
+	}
+
+	private collectEgg(chicken: Phaser.GameObjects.GameObject, egg: Phaser.GameObjects.GameObject) {
+		egg.destroy()
 	}
 
 	private createBackground() {
@@ -151,27 +157,27 @@ export default class LevelOne extends Phaser.Scene {
 	}
 
 	private createEggs() {
-		const egg1 = this.platforms.create(210, 578, TextureKeys.CollectedEgg)
+		const egg1 = this.eggs.create(210, 578, TextureKeys.CollectedEgg)
 		egg1.setScale(0.65)
 		egg1.body.updateFromGameObject()
 
-		const egg2 = this.platforms.create(525, 618, TextureKeys.CollectedEgg)
+		const egg2 = this.eggs.create(525, 618, TextureKeys.CollectedEgg)
 		egg2.setScale(0.65)
 		egg2.body.updateFromGameObject()
 
-		const egg3 = this.platforms.create(1255, 680, TextureKeys.CollectedEgg)
+		const egg3 = this.eggs.create(1255, 680, TextureKeys.CollectedEgg)
 		egg3.setScale(0.65)
 		egg3.body.updateFromGameObject()
 
-		const egg4 = this.platforms.create(1010, 338, TextureKeys.CollectedEgg)
+		const egg4 = this.eggs.create(1010, 338, TextureKeys.CollectedEgg)
 		egg4.setScale(0.65)
 		egg4.body.updateFromGameObject()
 
-		const egg5 = this.platforms.create(30, 272, TextureKeys.CollectedEgg)
+		const egg5 = this.eggs.create(30, 272, TextureKeys.CollectedEgg)
 		egg5.setScale(0.65)
 		egg5.body.updateFromGameObject()
 
-		const egg6 = this.platforms.create(705, 166, TextureKeys.CollectedEgg)
+		const egg6 = this.eggs.create(705, 166, TextureKeys.CollectedEgg)
 		egg6.setScale(0.65)
 		egg6.body.updateFromGameObject()
 	}

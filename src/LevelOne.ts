@@ -2,27 +2,35 @@ import Phaser from 'phaser'
 import AnimationKeys from './consts/AnimationKeys'
 import TextureKeys from './consts/TextureKeys'
 import { Chicken } from './characters/chicken'
+import { Snake } from './characters/snake'
+import { Rat } from './characters/rat'
 
 export default class LevelOne extends Phaser.Scene {
 	constructor() {
 		super('level-one')
-		this.eggs = 6
 	}
 
-	// cursors = this.input.keyboard.createCursorKeys()
 	platforms!: Phaser.Physics.Arcade.StaticGroup
-	eggs: integer
-	snakes!: Phaser.GameObjects.Sprite[]
+	eggs!: Phaser.Physics.Arcade.Group
+	// snakes!: Phaser.GameObjects.Sprite[]
 	chicken!: Chicken
+	snake!: Snake
+	rat!: Rat
+
 
 	init() {
 		this.chicken = new Chicken(this)
+		this.snake = new Snake(this)
+		this.rat = new Rat(this)
 	}
 
 	create() {
 		this.createBackground()
 
+		
 		this.chicken.create()
+
+		this.initEggs()
 		this.initPlatforms()
 		this.createFloor()
 		this.createLevelPlatforms()
@@ -30,35 +38,23 @@ export default class LevelOne extends Phaser.Scene {
 		this.createEggs()
 		this.createLevelBreakableBoxes()
 		this.createLevelRakes()
-		this.createSnakes()
-		this.createRats()
+		
+		this.rat.create()
+		this.snake.create()
+		// this.createRats()
 	}
 
 	update() {
 		this.chicken.chickenControls()
 	}
 
-	private createSnakes() {
-		//this.snakes.push(this.add.sprite(130,660, TextureKeys.Snake))
-		const a = this.add.sprite(620, 688, TextureKeys.Snake)
-		a.setScale(2.5, 2.5)
-		a.play(AnimationKeys.SnakeIdle)
-		//a.play(AnimationKeys.SnakeDeath)
-
-	}
-
-	private createRats() {
-		//this.snakes.push(this.add.sprite(130,660, TextureKeys.Snake))
-		const b = this.add.sprite(420, 558, TextureKeys.Rat)
-		b.setScale(2.5, 2.5)
-		b.play(AnimationKeys.RatWalking)
-		//a.play(AnimationKeys.SnakeDeath)
-
-	}
-
 	private initPlatforms() {
 		this.platforms = this.physics.add.staticGroup()
 		this.physics.add.collider(this.chicken.getPlayer(), this.platforms)
+	}
+
+	private initEggs() {
+		this.eggs = this.physics.add.group()
 	}
 
 	private createBackground() {

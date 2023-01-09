@@ -1,3 +1,5 @@
+import TextureKeys from "../consts/TextureKeys";
+
 export class Chicken {
     relatedScene: Phaser.Scene;
     player!: Phaser.Physics.Arcade.Sprite;
@@ -11,7 +13,7 @@ export class Chicken {
     }
 
     create() {
-        this.player = this.relatedScene.physics.add.sprite(500, 630, 'chicken');
+        this.player = this.relatedScene.physics.add.sprite(500, 630, TextureKeys.Chicken);
         this.player.setCollideWorldBounds(true);
     }
 

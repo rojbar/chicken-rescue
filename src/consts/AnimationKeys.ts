@@ -1,5 +1,6 @@
 enum AnimationKeys {
   SnakeIdle = "snake-idle",
+  ChickenIdle = "chicken-idle",
   SnakeWalking = "snake-walking",
   SnakeDeath   = "snake-death",
   SnakeAttack = "snake-attack",

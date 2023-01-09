@@ -1,5 +1,6 @@
 enum TextureKeys {
   Background = 'background',
+  Chicken = 'chicken',
   Snake = 'snake',
   SnakeDeath = 'snake-death',
   SmallWoodTile = "small-wood-tile",

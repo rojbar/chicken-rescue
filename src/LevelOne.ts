@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 import AnimationKeys from './consts/AnimationKeys'
 import TextureKeys from './consts/TextureKeys'
+import { Chicken } from './characters/chicken'
 
 export default class LevelOne extends Phaser.Scene {
 	constructor() {
@@ -8,12 +9,20 @@ export default class LevelOne extends Phaser.Scene {
 		this.eggs = 6
 	}
 
+	// cursors = this.input.keyboard.createCursorKeys()
 	platforms!: Phaser.Physics.Arcade.StaticGroup
 	eggs: integer 
 	snakes!: Phaser.GameObjects.Sprite[]
+	chicken!: Chicken
+
+	init () {
+		this.chicken =  new Chicken(this)
+	}
 
 	create() {
 		this.createBackground()
+
+		this.chicken.create()
 		this.initPlatforms()
 		this.createFloor()
 		this.createLevelPlatforms()
@@ -23,7 +32,6 @@ export default class LevelOne extends Phaser.Scene {
 		this.createLevelRakes()
 		this.createSnakes()
 		this.createRats()
-	
 	}
 
 	private createSnakes(){
@@ -34,6 +42,7 @@ export default class LevelOne extends Phaser.Scene {
 		//a.play(AnimationKeys.SnakeDeath)
 
 	}
+
 	private createRats(){
 		//this.snakes.push(this.add.sprite(130,660, TextureKeys.Snake))
 		const b = this.add.sprite(420,558, TextureKeys.Rat)
@@ -42,8 +51,10 @@ export default class LevelOne extends Phaser.Scene {
 		//a.play(AnimationKeys.SnakeDeath)
 
 	}
+
 	private initPlatforms(){
 		this.platforms = this.physics.add.staticGroup()
+		this.physics.add.collider(this.chicken.getPlayer(), this.platforms)
 	}
 
 	private createBackground(){

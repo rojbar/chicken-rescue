@@ -81,7 +81,7 @@ export default class PreloaderLevelOne extends Phaser.Scene {
 
 		//define animations rat
 		this.anims.create({
-			key: AnimationKeys.RatWalking,
+			key: AnimationKeys.Running,
 			frames: this.anims.generateFrameNames(TextureKeys.Rat, { prefix: 'walk', end: 9, zeroPad: 4 }),
 			frameRate: 10, 
 			repeat: -1 }
@@ -91,7 +91,7 @@ export default class PreloaderLevelOne extends Phaser.Scene {
 			key: AnimationKeys.RatDeath,
 			frames: this.anims.generateFrameNames(TextureKeys.Rat, { prefix: 'death', end: 9, zeroPad: 4 }),
 			frameRate: 10, 
-			repeat: -1 }
+			}
 		)
 
 

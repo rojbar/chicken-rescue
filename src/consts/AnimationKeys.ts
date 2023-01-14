@@ -7,7 +7,7 @@ enum AnimationKeys {
   SnakeDeath   = "snake-death",
   SnakeAttack = "snake-attack",
   RatIdle = "rat-idle",
-  RatWalking = "rat-walking",
+  Running = "running",
   RatDeath   = "rat-death",
   RatAttack = "rat-attack",
 }

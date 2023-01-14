@@ -30,6 +30,7 @@ export default class LevelOne extends Phaser.Scene {
 		
 		this.chicken.create()
 		this.rat.create()
+		this.snake.create()
 		
 		this.initEggs()
 		this.initPlatforms()
@@ -41,19 +42,21 @@ export default class LevelOne extends Phaser.Scene {
 		this.createLevelRakes()
 		
 	
-		this.snake.create()
+		
 		// this.createRats()
 	}
 
 	update() {
 		this.chicken.chickenControls()
 		this.rat.handleState()
+		this.snake.handleState()
 	}
 
 	private initPlatforms() {
 		this.platforms = this.physics.add.staticGroup()
 		this.physics.add.collider(this.chicken.getPlayer(), this.platforms)
 		this.physics.add.collider(this.rat.getRat(), this.platforms)
+		this.physics.add.collider(this.snake.getSnake(), this.platforms)
 		this.physics.add.collider(this.eggs, this.platforms)
 	}
 

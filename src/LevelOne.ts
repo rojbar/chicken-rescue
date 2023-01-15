@@ -178,7 +178,7 @@ export default class LevelOne extends Phaser.Scene {
            	this.second = 0;
            	this.minute++;
 			this.timer.minutes = '0' + this.minute
-			if(this.minute == 1 && this.second == 0){
+			if(this.minute == 3 && this.second == 0){
 				this.gameOver(this.minute, this.score);
 			}
         }

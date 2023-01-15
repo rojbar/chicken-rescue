@@ -18,12 +18,17 @@ export class Chicken {
     player!: Phaser.Physics.Arcade.Sprite;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     spacebar: Phaser.Input.Keyboard.Key;
-    state: STATES;
+    attackButtom: Phaser.Input.Keyboard.Key;
+    state!: STATES;
+    attacking: boolean;
+    attackBounds!: Phaser.GameObjects.Rectangle;
     
     constructor(scene: Phaser.Scene) {
         this.relatedScene = scene;
         this.cursors = this.relatedScene.input.keyboard.createCursorKeys();
         this.spacebar = this.relatedScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.attackButtom = this.relatedScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V);
+        this.attacking = false;
     }
 
     create() {
@@ -53,7 +58,7 @@ export class Chicken {
                     this.doWalkingLeft()
 
                     this.state = STATES.WALKING_LEFT
-
+                    this.doFlip('left')
                     return
                 } 
                 if (this.cursors.right.isDown) {
@@ -61,6 +66,12 @@ export class Chicken {
 
 
                     this.state = STATES.WALKING_RIGHT
+                    this.doFlip('right')
+                    return
+                }
+                if (Phaser.Input.Keyboard.JustDown(this.attackButtom)) {
+                    this.doAttack()
+                    this.state = STATES.ATTACK
 
                     return
                 }
@@ -81,6 +92,7 @@ export class Chicken {
 
 
                     this.state = STATES.WALKING_RIGHT
+                    this.doFlip('right')
 
                     return
                 }
@@ -89,6 +101,12 @@ export class Chicken {
 
                     return
                 } 
+                if (Phaser.Input.Keyboard.JustDown(this.attackButtom)) {
+                    this.doAttack()
+                    this.state = STATES.ATTACK
+
+                    return
+                }
 
                 this.doIdle()
                 this.state = STATES.IDLE
@@ -102,10 +120,17 @@ export class Chicken {
 
                     return
                 } 
+                if (Phaser.Input.Keyboard.JustDown(this.attackButtom)) {
+                    this.doAttack()
+                    this.state = STATES.ATTACK
+
+                    return
+                }
                 if (this.cursors.left.isDown) {
                     this.doWalkingLeft()
 
                     this.state = STATES.WALKING_LEFT
+                    this.doFlip('left')
                     return
                 } 
                 if (this.cursors.right.isDown) {
@@ -114,6 +139,7 @@ export class Chicken {
 
                     return
                 }
+                
 
                 this.doIdle()
                 this.state = STATES.IDLE
@@ -129,11 +155,13 @@ export class Chicken {
                 }
                 if (this.cursors.left.isDown) {
                     this.player.setVelocityX(-160)
+                    this.doFlip('left')
 
                     return
                 } 
                 if (this.cursors.right.isDown) {
                     this.player.setVelocityX(160)
+                    this.doFlip('right')
 
 
                     return
@@ -141,9 +169,15 @@ export class Chicken {
             break
 
             case STATES.ATTACK:
-
-                this.doIdle()
-                this.state = STATES.IDLE
+                if (this.attacking == false){
+                    this.attacking = true
+                    this.createAttackBounds()
+                    this.relatedScene.time.delayedCall(200, () => {
+                        this.attacking = false
+                        this.state = STATES.IDLE
+                        this.doIdle()
+                    }, [], this.relatedScene);
+                }
             break
 
             case STATES.FLYING:
@@ -151,6 +185,38 @@ export class Chicken {
             break
         }
 
+    }
+
+    getAttackState(){
+        return {
+            isAttacking: this.attacking, 
+            attackBox: this.attackBounds
+        }
+    }
+
+    // Create attack bounds
+    createAttackBounds(){
+        let attackBounds = this.relatedScene.add.rectangle(this.player.x, this.player.y, 50, 50, 0xff0000, 0.5);
+        attackBounds.setOrigin(0.5, 0.5);
+        attackBounds.setDepth(1);
+        attackBounds.setActive(false);
+        attackBounds.setVisible(false);
+        this.relatedScene.physics.world.enable(attackBounds);
+        this.attackBounds = attackBounds;
+        this.relatedScene.time.delayedCall(50, () => {attackBounds.destroy()}, [], this.relatedScene);
+    }
+
+    doFlip(direction: string){
+        switch(direction){
+            case 'left':
+                this.player.setFlipX(true);
+                this.player.setOffset(14, 20);
+                break
+            case 'right':
+                this.player.setFlipX(false);
+                this.player.setOffset(5, 20);
+                break;
+        }
     }
     
     doJumping(){
@@ -172,6 +238,10 @@ export class Chicken {
     doIdle(){
         this.player.setVelocityX(0)
         this.player.anims.play(AnimationKeys.ChickenIdle, true)
+    }
+
+    doAttack(){
+        this.player.anims.play(AnimationKeys.ChickenAttack, true)
     }
 
 }

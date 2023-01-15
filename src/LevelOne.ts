@@ -11,6 +11,7 @@ export default class LevelOne extends Phaser.Scene {
 	}
 
 	platforms!: Phaser.Physics.Arcade.StaticGroup
+	destroyabelBoxes!: Phaser.Physics.Arcade.StaticGroup
 	eggs!: Phaser.Physics.Arcade.Group
 	// snakes!: Phaser.GameObjects.Sprite[]
 	chicken!: Chicken
@@ -34,6 +35,7 @@ export default class LevelOne extends Phaser.Scene {
 		
 		this.initEggs()
 		this.initPlatforms()
+		this.initDestroyableBoxes()
 		this.createFloor()
 		this.createLevelPlatforms()
 		this.createLevelBoxes()
@@ -50,6 +52,7 @@ export default class LevelOne extends Phaser.Scene {
 		this.chicken.chickenControls()
 		this.rat.handleState()
 		this.snake.handleState()
+		this.destroyBox()
 	}
 
 	private initPlatforms() {
@@ -65,8 +68,23 @@ export default class LevelOne extends Phaser.Scene {
 		this.physics.add.collider(this.eggs, this.chicken.getPlayer(), this.collectEgg, undefined, this)
 	}
 
+	private initDestroyableBoxes() {
+		this.destroyabelBoxes = this.physics.add.staticGroup()
+		this.physics.add.collider(this.chicken.getPlayer(), this.destroyabelBoxes)
+		
+	}
+
 	private collectEgg(chicken: Phaser.GameObjects.GameObject, egg: Phaser.GameObjects.GameObject) {
 		egg.destroy()
+	}
+
+	private destroyBox() {
+		let attackState = this.chicken.getAttackState() 
+		if (attackState.isAttacking) {
+			this.physics.add.collider(attackState.attackBox, this.destroyabelBoxes, function (attackBox, destroyableBox) {
+				destroyableBox.destroy()
+			}, undefined, this)
+		}
 	}
 
 	private createBackground() {
@@ -139,8 +157,8 @@ export default class LevelOne extends Phaser.Scene {
 	private createLevelBreakableBoxes() {
 		const firstRowX = 130
 		const firstRowY = 680
-		this.platforms.create(firstRowX + 685, firstRowY, TextureKeys.WoodBoxBreakable).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 1125, firstRowY, TextureKeys.WoodBoxBreakable).body.updateFromGameObject()
+		this.destroyabelBoxes.create(firstRowX + 685, firstRowY, TextureKeys.WoodBoxBreakable).body.updateFromGameObject()
+		this.destroyabelBoxes.create(firstRowX + 1125, firstRowY, TextureKeys.WoodBoxBreakable).body.updateFromGameObject()
 	}
 
 	private createLevelRakes() {

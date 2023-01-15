@@ -18,7 +18,7 @@ export class Chicken {
     player!: Phaser.Physics.Arcade.Sprite;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     spacebar: Phaser.Input.Keyboard.Key;
-    state: STATES;
+    state!: STATES;
     
     constructor(scene: Phaser.Scene) {
         this.relatedScene = scene;
@@ -53,7 +53,7 @@ export class Chicken {
                     this.doWalkingLeft()
 
                     this.state = STATES.WALKING_LEFT
-
+                    this.doFlip('left')
                     return
                 } 
                 if (this.cursors.right.isDown) {
@@ -61,7 +61,7 @@ export class Chicken {
 
 
                     this.state = STATES.WALKING_RIGHT
-
+                    this.doFlip('right')
                     return
                 }
                 
@@ -81,6 +81,7 @@ export class Chicken {
 
 
                     this.state = STATES.WALKING_RIGHT
+                    this.doFlip('right')
 
                     return
                 }
@@ -106,6 +107,7 @@ export class Chicken {
                     this.doWalkingLeft()
 
                     this.state = STATES.WALKING_LEFT
+                    this.doFlip('left')
                     return
                 } 
                 if (this.cursors.right.isDown) {
@@ -129,11 +131,13 @@ export class Chicken {
                 }
                 if (this.cursors.left.isDown) {
                     this.player.setVelocityX(-160)
+                    this.doFlip('left')
 
                     return
                 } 
                 if (this.cursors.right.isDown) {
                     this.player.setVelocityX(160)
+                    this.doFlip('right')
 
 
                     return
@@ -151,6 +155,19 @@ export class Chicken {
             break
         }
 
+    }
+
+    doFlip(direction: string){
+        switch(direction){
+            case 'left':
+                this.player.setFlipX(true);
+                this.player.setOffset(14, 20);
+                break
+            case 'right':
+                this.player.setFlipX(false);
+                this.player.setOffset(5, 20);
+                break;
+        }
     }
     
     doJumping(){

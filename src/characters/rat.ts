@@ -9,7 +9,7 @@ enum STATES {
 
 export class Rat {
     relatedScene: Phaser.Scene;
-    state: STATES
+    state!: STATES
     rat!: Phaser.Physics.Arcade.Sprite;
 
     constructor(scene: Phaser.Scene) {

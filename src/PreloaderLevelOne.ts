@@ -86,6 +86,15 @@ export default class PreloaderLevelOne extends Phaser.Scene {
 			repeat: -1,
 		})
 
+		this.anims.create({
+			key: AnimationKeys.ChickenAttack,
+			frames: this.anims.generateFrameNumbers(TextureKeys.Chicken,{
+				frames: [2]
+			}),
+			frameRate: 3,
+			repeat: 3,
+		})
+
 		//define animations rat
 		this.anims.create({
 			key: AnimationKeys.Running,

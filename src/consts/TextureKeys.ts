@@ -1,5 +1,7 @@
 enum TextureKeys {
   Background = 'background',
+  Win = 'win',
+  GameOver = 'gameOver',
   Chicken = 'chicken',
   Snake = 'snake',
   SnakeDeath = 'snake-death',

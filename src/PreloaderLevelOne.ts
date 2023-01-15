@@ -11,6 +11,8 @@ export default class PreloaderLevelOne extends Phaser.Scene {
 
 		// load resources
 		this.load.image(TextureKeys.Background, 'background/2857_1280x720.jpg')
+		this.load.image(TextureKeys.Win, 'background/win.jpg')
+		this.load.image(TextureKeys.GameOver, 'background/gameOver.jpg')
 		this.load.image(TextureKeys.SmallWoodTile, 'assets/wood_small_platform.jpg')
 		this.load.image(TextureKeys.MediumWoodTile, 'assets/wood_medium_platform.jpg')
 		this.load.image(TextureKeys.LargeWoodTile, 'assets/wood_large_platform.jpg')

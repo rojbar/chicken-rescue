@@ -16,21 +16,38 @@ export default class LevelOne extends Phaser.Scene {
 	chicken!: Chicken
 	snake!: Snake
 	rat!: Rat
-
+	score!: 0
+	scoreText!: Phaser.GameObjects.Text
+	timeText!: Phaser.GameObjects.Text
+	timer!: {
+		minutes: string,
+		seconds: string
+	}
+	minute!: 0
+	second!: 0
 
 	init() {
 		this.chicken = new Chicken(this)
 		this.snake = new Snake(this)
 		this.rat = new Rat(this)
+		this.score = 0
+		this.second = 0
+		this.minute = 0
+		this.timer = {
+			minutes: "00",
+			seconds: "00"
+		}
+		
+
 	}
 
 	create() {
 		this.createBackground()
 
-		
+
 		this.chicken.create()
 		this.rat.create()
-		
+
 		this.initEggs()
 		this.initPlatforms()
 		this.createFloor()
@@ -39,10 +56,20 @@ export default class LevelOne extends Phaser.Scene {
 		this.createEggs()
 		this.createLevelBreakableBoxes()
 		this.createLevelRakes()
-		
-	
+
+
 		this.snake.create()
 		// this.createRats()
+
+		this.scoreText = this.add.text(250, 20, 'Eggs: 0 / 5', {
+			fontSize: '30px',
+			fontFamily: 'verdana, arial, san-serif'
+		})
+
+		this.timeText = this.add.text(20, 20, 'Time: '+this.timer.minutes+":"+this.timer.seconds, {
+			fontSize: '30px',
+			fontFamily: 'verdana, arial, san-serif'
+		})
 	}
 
 	update() {
@@ -55,6 +82,13 @@ export default class LevelOne extends Phaser.Scene {
 		this.physics.add.collider(this.chicken.getPlayer(), this.platforms)
 		this.physics.add.collider(this.rat.getRat(), this.platforms)
 		this.physics.add.collider(this.eggs, this.platforms)
+
+	}
+
+	private gameOver(minute: integer, score: integer){
+		if(minute == 3 && score != 5){
+			this.scene.start('finish');
+		}
 	}
 
 	private initEggs() {
@@ -64,10 +98,48 @@ export default class LevelOne extends Phaser.Scene {
 
 	private collectEgg(chicken: Phaser.GameObjects.GameObject, egg: Phaser.GameObjects.GameObject) {
 		egg.destroy()
+		this.score ++
+		this.scoreText.setText('Eggs: ' + this.score + ' / 5')
+		if (this.score == 5){
+			this.scene.start('win');
+		}
 	}
 
 	private createBackground() {
 		this.add.image(0, 0, TextureKeys.Background).setOrigin(0, 0)
+		this.scoreText
+		this.time.addEvent({
+            delay: 1000,
+            loop: true,
+            callback: () => {
+                this.updateTime();
+            }
+        });
+	}
+
+	private updateTime() {
+
+		this.second ++
+
+		if (this.second >= 10){
+			this.timer.seconds = this.second.toString()
+		}else{
+			this.timer.seconds = '0' + this.second
+		}
+
+        if (this.second >= 60) {
+           	this.second = 0;
+           	this.minute++;
+			this.timer.minutes = '0' + this.minute
+			if(this.minute == 1 && this.second == 0){
+				this.gameOver(this.minute, this.score);
+			}
+        }
+        this.updateTimeText();
+    }
+
+	private updateTimeText(){
+		this.timeText.setText('Time: '+this.timer.minutes+":"+this.timer.seconds)
 	}
 
 	private createFloor() {
@@ -186,3 +258,4 @@ export default class LevelOne extends Phaser.Scene {
 	}
 
 }
+

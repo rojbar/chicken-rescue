@@ -1,6 +1,8 @@
 import Phaser from 'phaser'
 
 import LevelOne from './LevelOne'
+import FinishLevel from './FinishLevel'
+import WinLevel from './WinLevel'
 import PreloaderLevelOne from './PreloaderLevelOne'
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -18,7 +20,7 @@ const config: Phaser.Types.Core.GameConfig = {
 			debug: true
 		},
 	},
-	scene: [PreloaderLevelOne, LevelOne],
+	scene: [PreloaderLevelOne, LevelOne, FinishLevel, WinLevel],
 }
 
 export default new Phaser.Game(config)

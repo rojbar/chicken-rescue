@@ -3,6 +3,7 @@ enum AnimationKeys {
   ChickenIdle = "chicken-idle",
   ChickenWalking = "chicken-walking",
   ChickenFlying = "chicken-flying",
+  ChickenAttack = "chicken-attack",
   SnakeWalking = "snake-walking",
   SnakeDeath   = "snake-death",
   SnakeAttack = "snake-attack",

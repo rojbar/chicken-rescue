@@ -23,24 +23,41 @@ export default class PreloaderLevelOne extends Phaser.Scene {
 		this.load.image(TextureKeys.CollectedEgg, 'assets/collected_egg.png')
 		this.load.image(TextureKeys.UncollectedEgg, 'assets/uncollected_egg.png')
 
-		this.load.spritesheet(TextureKeys.Snake, 'enemies/snake_idle.png',{frameWidth: 12,frameHeight: 12,} )
+		this.load.atlas(TextureKeys.Snake,'enemies/snakespritesheet.png', 'enemies/snakesprites.json')
 		this.load.spritesheet(TextureKeys.Chicken, 'characters/chicken/chicken_sprites.png',{frameWidth: 60,frameHeight: 60,})
-		this.load.spritesheet(TextureKeys.SnakeDeath, 'enemies/snake_death.png',{frameWidth:15, frameHeight:16,})
 		this.load.atlas(TextureKeys.Rat,'enemies/ratspritesheet.png', 'enemies/ratsprites.json')
 	}
 
 	create() {
 		// define animations snake
 		this.anims.create({
-			key: AnimationKeys.SnakeIdle,
-			frames: this.anims.generateFrameNumbers(TextureKeys.Snake,{
-				start: 0, 
-				end:9,
-			}),
-			frameRate: 10,
-			repeat: -1,
+			key: AnimationKeys.SnakeWalking,
+			frames: this.anims.generateFrameNames(TextureKeys.Snake, { prefix: 'walk', end: 9, zeroPad: 4 }),
+			frameRate: 10, 
+			repeat: -1
 		})
 
+		this.anims.create({
+			key: AnimationKeys.SnakeDeath,
+			frames: this.anims.generateFrameNames(TextureKeys.Snake, { prefix: 'death', end: 9, zeroPad: 4 }),
+			frameRate: 10, 
+		})
+
+		this.anims.create({
+			key: AnimationKeys.SnakeAttack,
+			frames: this.anims.generateFrameNames(TextureKeys.Snake, { prefix: 'attack', end: 9, zeroPad: 4 }),
+			frameRate: 10, 
+			repeat: -1
+		})
+
+		this.anims.create({
+			key: AnimationKeys.SnakeIdle,
+			frames: this.anims.generateFrameNames(TextureKeys.Snake, { prefix: 'idle', end: 9, zeroPad: 4 }),
+			frameRate: 10, 
+			repeat: -1
+		})
+
+		//define animations chicken
 		this.anims.create({
 			key: AnimationKeys.ChickenIdle,
 			frames: this.anims.generateFrameNumbers(TextureKeys.Chicken,{
@@ -72,13 +89,12 @@ export default class PreloaderLevelOne extends Phaser.Scene {
 		})
 
 		this.anims.create({
-			key: AnimationKeys.SnakeDeath,
-			frames: this.anims.generateFrameNumbers(TextureKeys.SnakeDeath ,{
-				start: 0, 
-				end:9,
+			key: AnimationKeys.ChickenAttack,
+			frames: this.anims.generateFrameNumbers(TextureKeys.Chicken,{
+				frames: [2]
 			}),
-			frameRate: 10,
-			repeat: -1,
+			frameRate: 3,
+			repeat: 3,
 		})
 
 		//define animations rat

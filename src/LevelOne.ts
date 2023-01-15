@@ -11,6 +11,8 @@ export default class LevelOne extends Phaser.Scene {
 	}
 
 	platforms!: Phaser.Physics.Arcade.StaticGroup
+	destroyabelBoxes!: Phaser.Physics.Arcade.StaticGroup
+	enemies!: Phaser.Physics.Arcade.Group
 	eggs!: Phaser.Physics.Arcade.Group
 	// snakes!: Phaser.GameObjects.Sprite[]
 	chicken!: Chicken
@@ -47,17 +49,21 @@ export default class LevelOne extends Phaser.Scene {
 
 		this.chicken.create()
 		this.rat.create()
-
+		this.snake.create()
+		
+		this.initEnemies()
 		this.initEggs()
 		this.initPlatforms()
+		this.initDestroyableBoxes()
+		
 		this.createFloor()
 		this.createLevelPlatforms()
 		this.createLevelBoxes()
 		this.createEggs()
 		this.createLevelBreakableBoxes()
 		this.createLevelRakes()
-
-
+		
+	
 		this.snake.create()
 		// this.createRats()
 
@@ -74,13 +80,23 @@ export default class LevelOne extends Phaser.Scene {
 
 	update() {
 		this.chicken.chickenControls()
-		this.rat.handleState()
+
+		if (this.rat.getRat().active) {
+			this.rat.handleState()
+		}
+		
+		if (this.snake.getSnake().active) {
+			this.snake.handleState()
+		}
+		
+		this.destroyBox()
+		this.destroyEnemy()
 	}
 
 	private initPlatforms() {
 		this.platforms = this.physics.add.staticGroup()
 		this.physics.add.collider(this.chicken.getPlayer(), this.platforms)
-		this.physics.add.collider(this.rat.getRat(), this.platforms)
+		this.physics.add.collider(this.enemies, this.platforms)
 		this.physics.add.collider(this.eggs, this.platforms)
 
 	}
@@ -96,12 +112,43 @@ export default class LevelOne extends Phaser.Scene {
 		this.physics.add.collider(this.eggs, this.chicken.getPlayer(), this.collectEgg, undefined, this)
 	}
 
+	private initEnemies (){
+		this.enemies = this.physics.add.group()
+		this.enemies.add(this.snake.getSnake())
+		this.enemies.add(this.rat.getRat())
+		this.physics.add.collider(this.chicken.getPlayer(), this.enemies, this.chicken.handleEnemyCollision, undefined, this)
+	}
+
+	private initDestroyableBoxes() {
+		this.destroyabelBoxes = this.physics.add.staticGroup()
+		this.physics.add.collider(this.chicken.getPlayer(), this.destroyabelBoxes)
+		
+	}
+
 	private collectEgg(chicken: Phaser.GameObjects.GameObject, egg: Phaser.GameObjects.GameObject) {
 		egg.destroy()
 		this.score ++
 		this.scoreText.setText('Eggs: ' + this.score + ' / 5')
 		if (this.score == 5){
 			this.scene.start('win');
+		}
+	}
+
+	private destroyBox() {
+		let attackState = this.chicken.getAttackState() 
+		if (attackState.isAttacking) {
+			this.physics.add.collider(attackState.attackBox, this.destroyabelBoxes, function (attackBox, destroyableBox) {
+				destroyableBox.destroy()
+			}, undefined, this)
+		}
+	}
+
+	private destroyEnemy() {
+		let attackState = this.chicken.getAttackState()
+		if (attackState.isAttacking) {
+			this.physics.add.overlap(attackState.attackBox, this.enemies, function (attackBox, enemy) {
+				enemy.destroy()
+			}, undefined, this)
 		}
 	}
 
@@ -208,8 +255,8 @@ export default class LevelOne extends Phaser.Scene {
 	private createLevelBreakableBoxes() {
 		const firstRowX = 130
 		const firstRowY = 680
-		this.platforms.create(firstRowX + 685, firstRowY, TextureKeys.WoodBoxBreakable).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 1125, firstRowY, TextureKeys.WoodBoxBreakable).body.updateFromGameObject()
+		this.destroyabelBoxes.create(firstRowX + 685, firstRowY, TextureKeys.WoodBoxBreakable).body.updateFromGameObject()
+		this.destroyabelBoxes.create(firstRowX + 1125, firstRowY, TextureKeys.WoodBoxBreakable).body.updateFromGameObject()
 	}
 
 	private createLevelRakes() {

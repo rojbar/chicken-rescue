@@ -20,6 +20,7 @@ export class Chicken {
     spacebar: Phaser.Input.Keyboard.Key;
     attackButtom: Phaser.Input.Keyboard.Key;
     state!: STATES;
+    side!: string;
     attacking: boolean;
     attackBounds!: Phaser.GameObjects.Rectangle;
     
@@ -196,14 +197,25 @@ export class Chicken {
 
     // Create attack bounds
     createAttackBounds(){
-        let attackBounds = this.relatedScene.add.rectangle(this.player.x, this.player.y, 50, 50, 0xff0000, 0.5);
+         
+        let attackBounds : Phaser.GameObjects.Rectangle;
+        if (this.side == 'left') {
+            attackBounds = this.relatedScene.add.rectangle(this.player.x -  10, this.player.y-5, 50, 10, 0xff0000, 0.5);
+
+        } else {
+            attackBounds = this.relatedScene.add.rectangle(this.player.x +  10, this.player.y-5, 50, 10, 0xff0000, 0.5);
+        }
         attackBounds.setOrigin(0.5, 0.5);
         attackBounds.setDepth(1);
         attackBounds.setActive(false);
         attackBounds.setVisible(false);
         this.relatedScene.physics.world.enable(attackBounds);
         this.attackBounds = attackBounds;
-        this.relatedScene.time.delayedCall(50, () => {attackBounds.destroy()}, [], this.relatedScene);
+        this.relatedScene.time.delayedCall(100, () => {attackBounds.destroy()}, [], this.relatedScene);
+    }
+
+    handleEnemyCollision (chicken: Phaser.GameObjects.GameObject, enemie: Phaser.GameObjects.GameObject) {
+        
     }
 
     doFlip(direction: string){
@@ -211,10 +223,12 @@ export class Chicken {
             case 'left':
                 this.player.setFlipX(true);
                 this.player.setOffset(14, 20);
+                this.side = 'left'
                 break
             case 'right':
                 this.player.setFlipX(false);
                 this.player.setOffset(5, 20);
+                this.side = 'right'
                 break;
         }
     }

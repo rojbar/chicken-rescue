@@ -12,6 +12,7 @@ export default class LevelOne extends Phaser.Scene {
 
 	platforms!: Phaser.Physics.Arcade.StaticGroup
 	destroyabelBoxes!: Phaser.Physics.Arcade.StaticGroup
+	enemies!: Phaser.Physics.Arcade.Group
 	eggs!: Phaser.Physics.Arcade.Group
 	// snakes!: Phaser.GameObjects.Sprite[]
 	chicken!: Chicken
@@ -33,9 +34,11 @@ export default class LevelOne extends Phaser.Scene {
 		this.rat.create()
 		this.snake.create()
 		
+		this.initEnemies()
 		this.initEggs()
 		this.initPlatforms()
 		this.initDestroyableBoxes()
+		
 		this.createFloor()
 		this.createLevelPlatforms()
 		this.createLevelBoxes()
@@ -50,22 +53,35 @@ export default class LevelOne extends Phaser.Scene {
 
 	update() {
 		this.chicken.chickenControls()
-		this.rat.handleState()
-		this.snake.handleState()
+		// this.rat.handleState()
+
+		// this.snake.handleState()
+		
+		// if snake was destroyed do not update
+		if (this.snake.getSnake().active) {
+			this.snake.handleState()
+		}
+		
 		this.destroyBox()
+		this.destroyEnemy()
 	}
 
 	private initPlatforms() {
 		this.platforms = this.physics.add.staticGroup()
 		this.physics.add.collider(this.chicken.getPlayer(), this.platforms)
-		this.physics.add.collider(this.rat.getRat(), this.platforms)
-		this.physics.add.collider(this.snake.getSnake(), this.platforms)
+		this.physics.add.collider(this.enemies, this.platforms)
 		this.physics.add.collider(this.eggs, this.platforms)
 	}
 
 	private initEggs() {
 		this.eggs = this.physics.add.group()
 		this.physics.add.collider(this.eggs, this.chicken.getPlayer(), this.collectEgg, undefined, this)
+	}
+
+	private initEnemies (){
+		this.enemies = this.physics.add.group()
+		this.enemies.add(this.snake.getSnake())
+		this.physics.add.collider(this.chicken.getPlayer(), this.enemies, this.chicken.handleEnemyCollision, undefined, this)
 	}
 
 	private initDestroyableBoxes() {
@@ -83,6 +99,15 @@ export default class LevelOne extends Phaser.Scene {
 		if (attackState.isAttacking) {
 			this.physics.add.collider(attackState.attackBox, this.destroyabelBoxes, function (attackBox, destroyableBox) {
 				destroyableBox.destroy()
+			}, undefined, this)
+		}
+	}
+
+	private destroyEnemy() {
+		let attackState = this.chicken.getAttackState()
+		if (attackState.isAttacking) {
+			this.physics.add.overlap(attackState.attackBox, this.enemies, function (attackBox, enemy) {
+				enemy.destroy()
 			}, undefined, this)
 		}
 	}

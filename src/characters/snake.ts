@@ -52,19 +52,26 @@ export class Snake {
             case STATES.IDLE:
                 let rng = Math.floor(Math.random() * 2)
                 console.log(rng);
-                if (rng < 1) {
-                    return
-                }
-                let aux = Math.floor(Math.random() * 2)
-                console.log(aux);
-                this.snake.play(AnimationKeys.SnakeWalking)
-                if (aux < 1) {
-                    this.state = STATES.RUN_LEFT
-                } else {
+                if(rng < 1){
+                    this.snake.play(AnimationKeys.SnakeAttack)
+                    this.state=STATES.ATTACK
+                    console.log('TATAKAE')
+                }else{
+                    let aux = Math.floor(Math.random()*2)
+                    console.log(aux);
+                    this.snake.play(AnimationKeys.SnakeWalking)
+                    if(aux < 1){
+                        this.state = STATES.RUN_LEFT
+                    }else{
+                        
+                        this.state = STATES.RUN_RIGHT
+                    }
 
-                    this.state = STATES.RUN_RIGHT
                 }
-
+                
+            case STATES.ATTACK:
+                this.attack()
+                this.randomFlip()
         }
     }
 
@@ -86,11 +93,16 @@ export class Snake {
         return this.snake;
     }
 
+    attack(){
+        this.snake.setVelocityX(0);
+        
+    }
 
-    genrateRandomNumber(min: number, max: number) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+ 
+    genrateRandomNumber (min: number, max: number) {
+	    min = Math.ceil(min);
+	    max = Math.floor(max);
+	    return Math.floor(Math.random() * (max - min + 1)) + min; 
     }
 
     randomFlip() {

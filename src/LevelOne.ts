@@ -53,11 +53,11 @@ export default class LevelOne extends Phaser.Scene {
 
 	update() {
 		this.chicken.chickenControls()
-		// this.rat.handleState()
 
-		// this.snake.handleState()
+		if (this.rat.getRat().active) {
+			this.rat.handleState()
+		}
 		
-		// if snake was destroyed do not update
 		if (this.snake.getSnake().active) {
 			this.snake.handleState()
 		}
@@ -81,6 +81,7 @@ export default class LevelOne extends Phaser.Scene {
 	private initEnemies (){
 		this.enemies = this.physics.add.group()
 		this.enemies.add(this.snake.getSnake())
+		this.enemies.add(this.rat.getRat())
 		this.physics.add.collider(this.chicken.getPlayer(), this.enemies, this.chicken.handleEnemyCollision, undefined, this)
 	}
 

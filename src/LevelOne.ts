@@ -6,15 +6,15 @@ import { Rat } from './characters/rat'
 import EnemyInterface from './characters/EnemyInterface'
 export default class LevelOne extends Phaser.Scene {
 	platforms!: Phaser.Physics.Arcade.StaticGroup
-	destroyabelBoxes!: Phaser.Physics.Arcade.StaticGroup
+	destroyableBoxes!: Phaser.Physics.Arcade.StaticGroup
 
+	rakesGroup!: Phaser.Physics.Arcade.StaticGroup
 	enemiesGroup!: Phaser.Physics.Arcade.Group
 	enemies!: EnemyInterface[]
 	
-	eggs!: Phaser.Physics.Arcade.Group
+	eggs!: Phaser.Physics.Arcade.StaticGroup
 	chicken!: Chicken
 
-	
 	score!: 0
 	scoreText!: Phaser.GameObjects.Text
 	timeText!: Phaser.GameObjects.Text
@@ -28,49 +28,40 @@ export default class LevelOne extends Phaser.Scene {
 	}
 
 	init() {
+		this.platforms = this.physics.add.staticGroup()
+		this.destroyableBoxes = this.physics.add.staticGroup()
+
+		this.rakesGroup = this.physics.add.staticGroup()
+		this.enemiesGroup = this.physics.add.group()
+		this.enemies = []
+
+		this.eggs = this.physics.add.staticGroup()
 		this.chicken = new Chicken(this)
+
 		this.score = 0
 		this.timer = {
 			minutes: 2,
 			seconds: 30
 		}
-		this.enemies = []
 	}
 
 	create() {
 		this.createBackground()
 		this.createTimer()
-		this.createEnemies()
 
-		this.chicken.create()
-		
-	
-		this.initEnemies()
-		this.initEggs()
-		this.initPlatforms()
-		this.initDestroyableBoxes()
-		
+		this.createRakes()
 		this.createFloor()
-		this.createLevelPlatforms()
-		this.createLevelBoxes()
+		this.createPlatforms()
+		this.createBoxes()
 		this.createEggs()
-		this.createLevelBreakableBoxes()
-		this.createLevelRakes()
-	
-		this.scoreText = this.add.text(250, 20, 'Eggs: 0 / 5', {
-			fontSize: '30px',
-			fontFamily: 'verdana, arial, san-serif'
-		})
-
-		this.timeText = this.add.text(20, 20, 'Time: '+this.timer.minutes+":"+this.timer.seconds, {
-			fontSize: '30px',
-			fontFamily: 'verdana, arial, san-serif'
-		})
+		this.createDestroyableBoxes()
+		
+		this.createChicken() // MUST BE SINCE CALLS chicken.Create()
+		this.createEnemies()
 	}
 
 	update() {
 		this.chicken.chickenControls()
-
 
 		for (let i = 0; i < this.enemies.length; i++) {
 			if(this.enemies[i].getEnemy().active){
@@ -82,84 +73,15 @@ export default class LevelOne extends Phaser.Scene {
 		this.destroyEnemy()
 	}
 
-	private initPlatforms() {
-		this.platforms = this.physics.add.staticGroup()
-		this.physics.add.collider(this.chicken.getPlayer(), this.platforms)
-		this.physics.add.collider(this.enemiesGroup, this.platforms)
-		this.physics.add.collider(this.eggs, this.platforms)
-
-	}
-
 	private gameOver(minute: integer, score: integer){
 		if(minute == 0 && score != 5){
 			this.scene.start('finish');
 		}
 	}
 
-	private createEnemies(){
-		let snake = new Snake(this)
-		snake.create(320,680)
-		this.enemies.push(snake)
-
-		let rat = new Rat(this)
-		rat.create(420,680)
-		this.enemies.push(rat)
-
-		let rat1 = new Rat(this)
-		rat1.create(460,680)
-		this.enemies.push(rat1)
-	}
-
-	private initEggs() {
-		this.eggs = this.physics.add.group()
-		this.physics.add.collider(this.eggs, this.chicken.getPlayer(), this.collectEgg, undefined, this)
-	}
-
-	private initEnemies (){
-		this.enemiesGroup = this.physics.add.group()
-		for(let i =0; i < this.enemies.length; i++){
-			this.enemiesGroup.add(this.enemies[i].getEnemy())
-		}
-
-		this.physics.add.collider(this.chicken.getPlayer(), this.enemiesGroup, this.chicken.handleEnemyCollision, undefined, this)
-	}
-
-	private initDestroyableBoxes() {
-		this.destroyabelBoxes = this.physics.add.staticGroup()
-		this.physics.add.collider(this.chicken.getPlayer(), this.destroyabelBoxes)
-		
-	}
-
-	private collectEgg(chicken: Phaser.GameObjects.GameObject, egg: Phaser.GameObjects.GameObject) {
-		egg.destroy()
-		this.score ++
-		this.scoreText.setText('Eggs: ' + this.score + ' / 5')
-		if (this.score == 5){
-			this.scene.start('win');
-		}
-	}
-
-	private destroyBox() {
-		let attackState = this.chicken.getAttackState() 
-		if (attackState.isAttacking) {
-			this.physics.add.collider(attackState.attackBox, this.destroyabelBoxes, function (attackBox, destroyableBox) {
-				destroyableBox.destroy()
-			}, undefined, this)
-		}
-	}
-
-	private destroyEnemy() {
-		let attackState = this.chicken.getAttackState()
-		if (attackState.isAttacking) {
-			this.physics.add.overlap(attackState.attackBox, this.enemiesGroup, function (attackBox, enemy) {
-				enemy.destroy()
-			}, undefined, this)
-		}
-	}
-
 	private createBackground() {
 		this.add.image(0, 0, TextureKeys.Background).setOrigin(0, 0)
-	}
+	} 
 
 	private createTimer(){
 		this.time.addEvent({
@@ -169,10 +91,20 @@ export default class LevelOne extends Phaser.Scene {
                 this.updateTime();
             }
         });
+
+			
+		this.scoreText = this.add.text(250, 20, 'Eggs: 0 / 5', {
+			fontSize: '30px',
+			fontFamily: 'verdana, arial, san-serif'
+		})
+
+		this.timeText = this.add.text(20, 20, 'Time: '+this.timer.minutes+":"+this.timer.seconds, {
+			fontSize: '30px',
+			fontFamily: 'verdana, arial, san-serif'
+		})
 	}
 
 	private updateTime() {
-
 		this.timer.seconds --
 
         if (this.timer.seconds <= 0) {
@@ -198,6 +130,59 @@ export default class LevelOne extends Phaser.Scene {
 		this.timeText.setText('Time: '+minutesText+":"+secondsText)
 	}
 
+	private createChicken(){
+		this.chicken.create()
+		this.physics.add.collider(this.chicken.getPlayer(), this.platforms)
+		this.physics.add.collider(this.chicken.getPlayer(), this.enemiesGroup, this.chicken.handleEnemyCollission, undefined, this.chicken)
+		this.physics.add.collider(this.chicken.getPlayer(), this.rakesGroup, this.chicken.handleEnemyCollission, undefined, this.chicken)
+		this.physics.add.collider(this.chicken.getPlayer(), this.eggs, this.collectEgg, undefined, this)
+		this.physics.add.collider(this.chicken.getPlayer(), this.destroyableBoxes)
+	}
+
+	private createEnemies(){
+		let positionsType = {
+			Snake: [ 
+				{ x: 320,y: 680,},
+				{ x: 1200 ,y: 680,},
+			],
+			Rat : [ 
+				{ x: 420,y: 680,},
+				{ x: 420,y: 500,},
+				{ x: 460,y: 680,},
+				{ x: 730 ,y: 680,},
+			],
+		}
+
+		for (let i = 0; i < positionsType.Snake.length; i++) {
+			let snake = new Snake(this)
+			snake.create(positionsType.Snake[i].x,positionsType.Snake[i].y) 
+			this.enemies.push(snake)
+		}
+
+		for (let i = 0; i < positionsType.Rat.length; i++) {
+			let rat = new Rat(this)
+			rat.create(positionsType.Rat[i].x,positionsType.Rat[i].y)
+			this.enemies.push(rat)
+		}
+		for(let i =0; i < this.enemies.length; i++){
+			this.enemiesGroup.add(this.enemies[i].getEnemy())
+		}
+
+		this.physics.add.collider(this.enemiesGroup, this.platforms)
+		this.physics.add.collider(this.enemiesGroup, this.rakesGroup)
+		this.physics.add.collider(this.enemiesGroup, this.destroyableBoxes)
+	}
+
+
+	private collectEgg(chicken: Phaser.GameObjects.GameObject, egg: Phaser.GameObjects.GameObject) {
+		egg.destroy()
+		this.score ++
+		this.scoreText.setText('Eggs: ' + this.score + ' / 5')
+		if (this.score == 5){
+			this.scene.start('win');
+		}
+	}
+
 	private createFloor() {
 		let base = 180
 		for (let index = 0; index < 8; index++) {
@@ -206,111 +191,117 @@ export default class LevelOne extends Phaser.Scene {
 		}
 	}
 
-	private createLevelPlatforms() {
-		const firstRowX = 130
-		const firstRowY = 660
+	private createPlatforms() {
+		let positions = [
+			{x: 140, y:669, texture: TextureKeys.SmallWoodTile},
+			{x: 450, y:570, texture: TextureKeys.LargeWoodTile},
+			{x: 525, y:650, texture: TextureKeys.SmallWoodTile},
+			{x: 640, y:510, texture: TextureKeys.SmallWoodTile},
+			{x: 850, y:510, texture: TextureKeys.MediumWoodTile},
+			{x: 1040, y:660, texture: TextureKeys.SmallWoodTile},
+			{x: 1010, y:480, texture: TextureKeys.SmallWoodTile},
+			{x: 1140, y:430, texture: TextureKeys.SmallWoodTile},
+			{x: 1010, y:360, texture: TextureKeys.SmallWoodTile},
+			{x: 770, y:370, texture: TextureKeys.LargeWoodTile},
+			{x: 560, y:370, texture: TextureKeys.LargeWoodTile},
+			{x: 345, y:370, texture: TextureKeys.LargeWoodTile},
+			{x: 165, y:335, texture: TextureKeys.SmallWoodTile},
+			{x: 20, y:295, texture: TextureKeys.SmallWoodTile},
+			{x: 145, y:225, texture: TextureKeys.SmallWoodTile},
+			{x: 305, y:200, texture: TextureKeys.MediumWoodTile},
+			{x: 485, y:230, texture: TextureKeys.LargeWoodTile},
+			{x: 705, y:190, texture: TextureKeys.SmallWoodTile},
+			{x: 925, y:230, texture: TextureKeys.LargeWoodTile},
+			{x: 1185, y:140, texture: TextureKeys.SmallWoodTile},
+			{x: 1240, y:140, texture: TextureKeys.SmallWoodTile},	
+		]
 
-		this.platforms.create(firstRowX+10, firstRowY+9, TextureKeys.SmallWoodTile).body.updateFromGameObject()
+		for (let i = 0; i < positions.length; i++) {
+			this.platforms.create(positions[i].x, positions[i].y, positions[i].texture).body.updateFromGameObject()	
+		}
 
-
-		this.platforms.create(firstRowX + 320, firstRowY - 90, TextureKeys.LargeWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 395, firstRowY - 10, TextureKeys.SmallWoodTile).body.updateFromGameObject()
-
-		this.platforms.create(firstRowX + 510, firstRowY - 150, TextureKeys.SmallWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 720, firstRowY - 150, TextureKeys.MediumWoodTile).body.updateFromGameObject()
-
-		this.platforms.create(firstRowX + 910, firstRowY, TextureKeys.SmallWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 880, firstRowY - 180, TextureKeys.SmallWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 1010, firstRowY - 230, TextureKeys.SmallWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 880, firstRowY - 300, TextureKeys.SmallWoodTile).body.updateFromGameObject()
-
-		this.platforms.create(firstRowX + 640, firstRowY - 290, TextureKeys.LargeWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 430, firstRowY - 290, TextureKeys.LargeWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 215, firstRowY - 290, TextureKeys.LargeWoodTile).body.updateFromGameObject()
-
-		this.platforms.create(firstRowX + 35, firstRowY - 325, TextureKeys.SmallWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX - 110, firstRowY - 365, TextureKeys.SmallWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 15, firstRowY - 435, TextureKeys.SmallWoodTile).body.updateFromGameObject()
-
-		this.platforms.create(firstRowX + 175, firstRowY - 460, TextureKeys.MediumWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 355, firstRowY - 430, TextureKeys.LargeWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 575, firstRowY - 470, TextureKeys.SmallWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 795, firstRowY - 430, TextureKeys.LargeWoodTile).body.updateFromGameObject()
-
-		this.platforms.create(firstRowX + 1055, firstRowY - 520, TextureKeys.SmallWoodTile)
-		this.platforms.create(firstRowX + 1110, firstRowY - 520, TextureKeys.SmallWoodTile)
-
-		const wallWoodImage = this.add.image(firstRowX + 1085, firstRowY - 500, TextureKeys.WallWoodTile)
+		const wallWoodImage = this.add.image(1215, 160, TextureKeys.WallWoodTile)
 		wallWoodImage.flipX = !wallWoodImage.flipX
 
-		const lastSmall = this.platforms.create(firstRowX + 952, firstRowY - 470, TextureKeys.SmallWoodTile)
+		const lastSmall = this.platforms.create(1082, 190, TextureKeys.SmallWoodTile)
 		lastSmall.setScale(0.5)
 		lastSmall.body.updateFromGameObject()
 	}
 
-	private createLevelBoxes() {
-		const firstRowX = 130
-		const firstRowY = 680
+	private createBoxes() {
+		let positions = [
+			{x: 360, y:680},
+			{x: 538,y:680},
+			{x: 680, y:680},
+			{x: 725,y:680},
+			{x: 770, y:680},
+			{x: 315,y:680},
+		]
 
-		this.platforms.create(firstRowX + 230, firstRowY, TextureKeys.WoodBox).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 408, firstRowY - 142, TextureKeys.WoodBox).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 550, firstRowY, TextureKeys.WoodBox).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 595, firstRowY, TextureKeys.WoodBox).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 640, firstRowY, TextureKeys.WoodBox).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 215, firstRowY - 342, TextureKeys.WoodBox).body.updateFromGameObject()
+		for (let i = 0; i < positions.length; i++) {
+			this.platforms.create(positions[i].x, positions[i].y, TextureKeys.WoodBox).body.updateFromGameObject()	
+		}
 	}
 
-	private createLevelBreakableBoxes() {
-		const firstRowX = 130
-		const firstRowY = 680
-		this.destroyabelBoxes.create(firstRowX + 685, firstRowY, TextureKeys.WoodBoxBreakable).body.updateFromGameObject()
-		this.destroyabelBoxes.create(firstRowX + 1125, firstRowY, TextureKeys.WoodBoxBreakable).body.updateFromGameObject()
+	private createDestroyableBoxes() {
+		let positions = [
+			{x: 815, y:680},
+			{x: 1255,y:680},
+		]
+
+		for (let i = 0; i < positions.length; i++) {
+			this.destroyableBoxes.create(positions[i].x, positions[i].y, TextureKeys.WoodBoxBreakable).body.updateFromGameObject()	
+		}
 	}
 
-	private createLevelRakes() {
-		const firstRowX = 845
-		const firstRowY = 485
-		this.platforms.create(firstRowX - 38, firstRowY, TextureKeys.Rake).body.updateFromGameObject()
+	private createRakes() {
+		let positions = [
+			{x: 807, y:485},
+			{x: 1000,y:688},
+			{x: 633, y:345},
+			{x: 810, y:345},
+			{x: 0, y:270},
+			{x: 350, y:175},
+		]
 
-		const secondRowX = 1000
-		const secondRowY = 688
-		this.platforms.create(secondRowX, secondRowY, TextureKeys.Rake).body.updateFromGameObject()
-		this.platforms.create(secondRowX + 80, secondRowY, TextureKeys.Rake).body.updateFromGameObject()
-
-		const thirdRowX = 630
-		const thirdRowY = 345
-		this.platforms.create(thirdRowX + 3, thirdRowY, TextureKeys.Rake).body.updateFromGameObject()
-		this.platforms.create(thirdRowX + 180, thirdRowY, TextureKeys.Rake).body.updateFromGameObject()
-
-		this.platforms.create(thirdRowX - 630, thirdRowY - 75, TextureKeys.Rake).body.updateFromGameObject()
-		this.platforms.create(thirdRowX - 280, thirdRowY - 170, TextureKeys.Rake).body.updateFromGameObject()
+		for (let i = 0; i < positions.length; i++) {
+			this.rakesGroup.create(positions[i].x, positions[i].y, TextureKeys.Rake).body.updateFromGameObject()	
+		}
 	}
 
 	private createEggs() {
-		const egg1 = this.eggs.create(260, 690, TextureKeys.CollectedEgg)
-		egg1.setScale(0.65)
-		egg1.body.updateFromGameObject()
+		let positions = [
+			{x: 260, y:690},
+			{x: 525, y:618},
+			{x: 1255, y:680},
+			{x: 1010, y:338},
+			{x: 705, y:166},
+		]
 
-		const egg2 = this.eggs.create(525, 618, TextureKeys.CollectedEgg)
-		egg2.setScale(0.65)
-		egg2.body.updateFromGameObject()
+		for (let i = 0; i < positions.length; i++) {
+			const egg = this.eggs.create(positions[i].x, positions[i].y, TextureKeys.CollectedEgg)
+			egg.setScale(0.65)
+			egg.body.updateFromGameObject()
+		}
+	}
 
-		const egg3 = this.eggs.create(1255, 680, TextureKeys.CollectedEgg)
-		egg3.setScale(0.65)
-		egg3.body.updateFromGameObject()
+	private destroyBox() {
+		let attackState = this.chicken.getAttackState() 
+		if (attackState.isAttacking) {
+			this.physics.add.collider(attackState.attackBox, this.destroyableBoxes, function (attackBox, destroyableBox) {
+				destroyableBox.destroy()
+			}, undefined, this)
+		}
+	}
 
-		const egg4 = this.eggs.create(1010, 338, TextureKeys.CollectedEgg)
-		egg4.setScale(0.65)
-		egg4.body.updateFromGameObject()
-
-		const egg5 = this.eggs.create(30, 272, TextureKeys.CollectedEgg)
-		egg5.setScale(0.65)
-		egg5.body.updateFromGameObject()
-
-		const egg6 = this.eggs.create(705, 166, TextureKeys.CollectedEgg)
-		egg6.setScale(0.65)
-		egg6.body.updateFromGameObject()
+	private destroyEnemy() {
+		let attackState = this.chicken.getAttackState()
+		
+		if (attackState.isAttacking) {
+			this.physics.add.overlap(attackState.attackBox, this.enemiesGroup, function (attackBox, enemy) {
+				enemy.destroy()
+			}, undefined, this)
+		}
 	}
 
 }
-

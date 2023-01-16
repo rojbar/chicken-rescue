@@ -13,23 +13,27 @@ enum STATES {
 }
 
 export class Chicken {
-    
     relatedScene: Phaser.Scene;
-    player!: Phaser.Physics.Arcade.Sprite;
+
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     spacebar: Phaser.Input.Keyboard.Key;
-    attackButtom: Phaser.Input.Keyboard.Key;
+    attackButton: Phaser.Input.Keyboard.Key;
+
     state!: STATES;
     side!: string;
     attacking: boolean;
     attackBounds!: Phaser.GameObjects.Rectangle;
+    player!: Phaser.Physics.Arcade.Sprite;
+
+    deaths: integer
     
     constructor(scene: Phaser.Scene) {
         this.relatedScene = scene;
         this.cursors = this.relatedScene.input.keyboard.createCursorKeys();
         this.spacebar = this.relatedScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.attackButtom = this.relatedScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V);
+        this.attackButton = this.relatedScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V);
         this.attacking = false;
+        this.deaths = 0
     }
 
     create() {
@@ -47,6 +51,14 @@ export class Chicken {
 
     chickenControls() {
         switch(this.state){
+            case STATES.DEATH: 
+                this.player.setPosition(50,660)
+                this.state = STATES.IDLE
+                this.deaths++
+                if(this.deaths == 3) {
+                    this.relatedScene.scene.start('finish')
+                }
+            break
             case STATES.IDLE:
                 if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
                     this.doJumping()
@@ -70,7 +82,7 @@ export class Chicken {
                     this.doFlip('right')
                     return
                 }
-                if (Phaser.Input.Keyboard.JustDown(this.attackButtom)) {
+                if (Phaser.Input.Keyboard.JustDown(this.attackButton)) {
                     this.doAttack()
                     this.state = STATES.ATTACK
 
@@ -102,7 +114,7 @@ export class Chicken {
 
                     return
                 } 
-                if (Phaser.Input.Keyboard.JustDown(this.attackButtom)) {
+                if (Phaser.Input.Keyboard.JustDown(this.attackButton)) {
                     this.doAttack()
                     this.state = STATES.ATTACK
 
@@ -121,7 +133,7 @@ export class Chicken {
 
                     return
                 } 
-                if (Phaser.Input.Keyboard.JustDown(this.attackButtom)) {
+                if (Phaser.Input.Keyboard.JustDown(this.attackButton)) {
                     this.doAttack()
                     this.state = STATES.ATTACK
 
@@ -181,9 +193,6 @@ export class Chicken {
                 }
             break
 
-            case STATES.FLYING:
-                //perhaps this is not necessary
-            break
         }
 
     }
@@ -195,9 +204,13 @@ export class Chicken {
         }
     }
 
+    handleEnemyCollission(){
+        console.log('death')
+        this.state = STATES.DEATH
+    } 
+
     // Create attack bounds
     createAttackBounds(){
-         
         let attackBounds : Phaser.GameObjects.Rectangle;
         if (this.side == 'left') {
             attackBounds = this.relatedScene.add.rectangle(this.player.x -  10, this.player.y-5, 50, 10, 0xff0000, 0.5);
@@ -205,17 +218,15 @@ export class Chicken {
         } else {
             attackBounds = this.relatedScene.add.rectangle(this.player.x +  10, this.player.y-5, 50, 10, 0xff0000, 0.5);
         }
+        
         attackBounds.setOrigin(0.5, 0.5);
         attackBounds.setDepth(1);
         attackBounds.setActive(false);
         attackBounds.setVisible(false);
+
         this.relatedScene.physics.world.enable(attackBounds);
         this.attackBounds = attackBounds;
         this.relatedScene.time.delayedCall(100, () => {attackBounds.destroy()}, [], this.relatedScene);
-    }
-
-    handleEnemyCollision (chicken: Phaser.GameObjects.GameObject, enemie: Phaser.GameObjects.GameObject) {
-        
     }
 
     doFlip(direction: string){
@@ -240,13 +251,11 @@ export class Chicken {
 
     doWalkingLeft(){
         this.player.setVelocityX(-160)
-        //	this.chicken.anims.play(AnimationKeys.ChickenLeft, true)
     }
 
     doWalkingRight(){
         this.player.setVelocityX(160)
         this.player.play(AnimationKeys.ChickenWalking, true)
-        //	this.chicken.anims.play(AnimationKeys.ChickenRight, true)
     }
 
     doIdle(){

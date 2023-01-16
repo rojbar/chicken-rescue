@@ -15,6 +15,7 @@ export class Snake implements EnemyInterface{
     state: STATES
     snake!: Phaser.Physics.Arcade.Sprite;
     changeState: boolean
+    checkBorderBox!: Phaser.GameObjects.Rectangle; 
 
     constructor(scene: Phaser.Scene) {
         this.state = STATES.IDLE
@@ -29,6 +30,7 @@ export class Snake implements EnemyInterface{
         this.snake.play(AnimationKeys.SnakeIdle);
         this.snake.setCollideWorldBounds(true);
     }
+
 
     handleState() {
         switch (this.state) {
@@ -69,17 +71,10 @@ export class Snake implements EnemyInterface{
                     }
 
                 }
-                
             case STATES.ATTACK:
-                this.attack()
+                this.doAttack()
                 this.randomFlip()
         }
-    }
-
-    isGoingToFallOfBorder() {
-
-
-        return false
     }
 
     doRunLeft() {
@@ -90,20 +85,12 @@ export class Snake implements EnemyInterface{
         this.snake.setVelocityX(+120);
     }
 
+    doAttack(){
+        this.snake.setVelocityX(0);
+    }
+
     getEnemy() {
         return this.snake;
-    }
-
-    attack(){
-        this.snake.setVelocityX(0);
-        
-    }
-
- 
-    genrateRandomNumber (min: number, max: number) {
-	    min = Math.ceil(min);
-	    max = Math.floor(max);
-	    return Math.floor(Math.random() * (max - min + 1)) + min; 
     }
 
     randomFlip() {
@@ -118,12 +105,22 @@ export class Snake implements EnemyInterface{
                         this.changeState = true
                     }
                 },
-                //args: [],
                 callbackScope: this,
-                //repeat: 1
                 loop: false
             });
         }
     }
 
+    genrateRandomNumber (min: number, max: number) {
+	    min = Math.ceil(min);
+	    max = Math.floor(max);
+	    return Math.floor(Math.random() * (max - min + 1)) + min; 
+    }
+
+  
+    isGoingToFallOfBorder() {
+
+
+        return false
+    }
 }

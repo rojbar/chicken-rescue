@@ -22,22 +22,18 @@ export default class LevelOne extends Phaser.Scene {
 	scoreText!: Phaser.GameObjects.Text
 	timeText!: Phaser.GameObjects.Text
 	timer!: {
-		minutes: string,
-		seconds: string
+		minutes: integer,
+		seconds: integer,
 	}
-	minute!: 0
-	second!: 0
 
 	init() {
 		this.chicken = new Chicken(this)
 		this.snake = new Snake(this)
 		this.rat = new Rat(this)
 		this.score = 0
-		this.second = 0
-		this.minute = 0
 		this.timer = {
-			minutes: "00",
-			seconds: "00"
+			minutes: 2,
+			seconds: 30
 		}
 		
 
@@ -102,7 +98,7 @@ export default class LevelOne extends Phaser.Scene {
 	}
 
 	private gameOver(minute: integer, score: integer){
-		if(minute == 3 && score != 5){
+		if(minute == 0 && score != 5){
 			this.scene.start('finish');
 		}
 	}
@@ -166,27 +162,29 @@ export default class LevelOne extends Phaser.Scene {
 
 	private updateTime() {
 
-		this.second ++
+		this.timer.seconds --
 
-		if (this.second >= 10){
-			this.timer.seconds = this.second.toString()
-		}else{
-			this.timer.seconds = '0' + this.second
-		}
-
-        if (this.second >= 60) {
-           	this.second = 0;
-           	this.minute++;
-			this.timer.minutes = '0' + this.minute
-			if(this.minute == 1 && this.second == 0){
-				this.gameOver(this.minute, this.score);
-			}
+        if (this.timer.seconds <= 0) {
+			this.timer.seconds = 60;
+			this.timer.minutes--;
         }
+
         this.updateTimeText();
+		this.gameOver(this.timer.minutes, this.score);
     }
 
 	private updateTimeText(){
-		this.timeText.setText('Time: '+this.timer.minutes+":"+this.timer.seconds)
+		let minutesText = this.timer.minutes.toString()
+		if(this.timer.minutes < 10){
+			minutesText = "0" + minutesText
+		}
+
+		let secondsText = this.timer.seconds.toString()
+		if(this.timer.seconds < 10){
+			secondsText = "0" + secondsText
+		}
+
+		this.timeText.setText('Time: '+minutesText+":"+secondsText)
 	}
 
 	private createFloor() {

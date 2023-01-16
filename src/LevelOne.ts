@@ -1,23 +1,20 @@
 import Phaser from 'phaser'
-import AnimationKeys from './consts/AnimationKeys'
 import TextureKeys from './consts/TextureKeys'
 import { Chicken } from './characters/chicken'
 import { Snake } from './characters/snake'
 import { Rat } from './characters/rat'
-
+import EnemyInterface from './characters/EnemyInterface'
 export default class LevelOne extends Phaser.Scene {
-	constructor() {
-		super('level-one')
-	}
-
 	platforms!: Phaser.Physics.Arcade.StaticGroup
 	destroyabelBoxes!: Phaser.Physics.Arcade.StaticGroup
-	enemies!: Phaser.Physics.Arcade.Group
+
+	enemiesGroup!: Phaser.Physics.Arcade.Group
+	enemies!: EnemyInterface[]
+	
 	eggs!: Phaser.Physics.Arcade.Group
-	// snakes!: Phaser.GameObjects.Sprite[]
 	chicken!: Chicken
-	snake!: Snake
-	rat!: Rat
+
+	
 	score!: 0
 	scoreText!: Phaser.GameObjects.Text
 	timeText!: Phaser.GameObjects.Text
@@ -26,27 +23,28 @@ export default class LevelOne extends Phaser.Scene {
 		seconds: integer,
 	}
 
+	constructor() {
+		super('level-one')
+	}
+
 	init() {
 		this.chicken = new Chicken(this)
-		this.snake = new Snake(this)
-		this.rat = new Rat(this)
 		this.score = 0
 		this.timer = {
 			minutes: 2,
 			seconds: 30
 		}
-		
-
+		this.enemies = []
 	}
 
 	create() {
 		this.createBackground()
-
+		this.createTimer()
+		this.createEnemies()
 
 		this.chicken.create()
-		this.rat.create()
-		this.snake.create()
 		
+	
 		this.initEnemies()
 		this.initEggs()
 		this.initPlatforms()
@@ -58,11 +56,7 @@ export default class LevelOne extends Phaser.Scene {
 		this.createEggs()
 		this.createLevelBreakableBoxes()
 		this.createLevelRakes()
-		
 	
-		this.snake.create()
-		// this.createRats()
-
 		this.scoreText = this.add.text(250, 20, 'Eggs: 0 / 5', {
 			fontSize: '30px',
 			fontFamily: 'verdana, arial, san-serif'
@@ -77,12 +71,11 @@ export default class LevelOne extends Phaser.Scene {
 	update() {
 		this.chicken.chickenControls()
 
-		if (this.rat.getRat().active) {
-			this.rat.handleState()
-		}
-		
-		if (this.snake.getSnake().active) {
-			this.snake.handleState()
+
+		for (let i = 0; i < this.enemies.length; i++) {
+			if(this.enemies[i].getEnemy().active){
+				this.enemies[i].handleState();
+			}
 		}
 		
 		this.destroyBox()
@@ -92,7 +85,7 @@ export default class LevelOne extends Phaser.Scene {
 	private initPlatforms() {
 		this.platforms = this.physics.add.staticGroup()
 		this.physics.add.collider(this.chicken.getPlayer(), this.platforms)
-		this.physics.add.collider(this.enemies, this.platforms)
+		this.physics.add.collider(this.enemiesGroup, this.platforms)
 		this.physics.add.collider(this.eggs, this.platforms)
 
 	}
@@ -103,16 +96,32 @@ export default class LevelOne extends Phaser.Scene {
 		}
 	}
 
+	private createEnemies(){
+		let snake = new Snake(this)
+		snake.create(320,680)
+		this.enemies.push(snake)
+
+		let rat = new Rat(this)
+		rat.create(420,680)
+		this.enemies.push(rat)
+
+		let rat1 = new Rat(this)
+		rat1.create(460,680)
+		this.enemies.push(rat1)
+	}
+
 	private initEggs() {
 		this.eggs = this.physics.add.group()
 		this.physics.add.collider(this.eggs, this.chicken.getPlayer(), this.collectEgg, undefined, this)
 	}
 
 	private initEnemies (){
-		this.enemies = this.physics.add.group()
-		this.enemies.add(this.snake.getSnake())
-		this.enemies.add(this.rat.getRat())
-		this.physics.add.collider(this.chicken.getPlayer(), this.enemies, this.chicken.handleEnemyCollision, undefined, this)
+		this.enemiesGroup = this.physics.add.group()
+		for(let i =0; i < this.enemies.length; i++){
+			this.enemiesGroup.add(this.enemies[i].getEnemy())
+		}
+
+		this.physics.add.collider(this.chicken.getPlayer(), this.enemiesGroup, this.chicken.handleEnemyCollision, undefined, this)
 	}
 
 	private initDestroyableBoxes() {
@@ -142,7 +151,7 @@ export default class LevelOne extends Phaser.Scene {
 	private destroyEnemy() {
 		let attackState = this.chicken.getAttackState()
 		if (attackState.isAttacking) {
-			this.physics.add.overlap(attackState.attackBox, this.enemies, function (attackBox, enemy) {
+			this.physics.add.overlap(attackState.attackBox, this.enemiesGroup, function (attackBox, enemy) {
 				enemy.destroy()
 			}, undefined, this)
 		}
@@ -150,7 +159,9 @@ export default class LevelOne extends Phaser.Scene {
 
 	private createBackground() {
 		this.add.image(0, 0, TextureKeys.Background).setOrigin(0, 0)
-		this.scoreText
+	}
+
+	private createTimer(){
 		this.time.addEvent({
             delay: 1000,
             loop: true,
@@ -199,12 +210,11 @@ export default class LevelOne extends Phaser.Scene {
 		const firstRowX = 130
 		const firstRowY = 660
 
-		this.platforms.create(firstRowX, firstRowY, TextureKeys.SmallWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 80, firstRowY - 60, TextureKeys.SmallWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 190, firstRowY - 25, TextureKeys.SmallWoodTile).body.updateFromGameObject()
+		this.platforms.create(firstRowX+10, firstRowY+9, TextureKeys.SmallWoodTile).body.updateFromGameObject()
 
-		this.platforms.create(firstRowX + 340, firstRowY - 80, TextureKeys.LargeWoodTile).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 395, firstRowY - 20, TextureKeys.SmallWoodTile).body.updateFromGameObject()
+
+		this.platforms.create(firstRowX + 320, firstRowY - 90, TextureKeys.LargeWoodTile).body.updateFromGameObject()
+		this.platforms.create(firstRowX + 395, firstRowY - 10, TextureKeys.SmallWoodTile).body.updateFromGameObject()
 
 		this.platforms.create(firstRowX + 510, firstRowY - 150, TextureKeys.SmallWoodTile).body.updateFromGameObject()
 		this.platforms.create(firstRowX + 720, firstRowY - 150, TextureKeys.MediumWoodTile).body.updateFromGameObject()
@@ -243,7 +253,7 @@ export default class LevelOne extends Phaser.Scene {
 		const firstRowY = 680
 
 		this.platforms.create(firstRowX + 230, firstRowY, TextureKeys.WoodBox).body.updateFromGameObject()
-		this.platforms.create(firstRowX + 408, firstRowY - 132, TextureKeys.WoodBox).body.updateFromGameObject()
+		this.platforms.create(firstRowX + 408, firstRowY - 142, TextureKeys.WoodBox).body.updateFromGameObject()
 		this.platforms.create(firstRowX + 550, firstRowY, TextureKeys.WoodBox).body.updateFromGameObject()
 		this.platforms.create(firstRowX + 595, firstRowY, TextureKeys.WoodBox).body.updateFromGameObject()
 		this.platforms.create(firstRowX + 640, firstRowY, TextureKeys.WoodBox).body.updateFromGameObject()
@@ -277,7 +287,7 @@ export default class LevelOne extends Phaser.Scene {
 	}
 
 	private createEggs() {
-		const egg1 = this.eggs.create(210, 578, TextureKeys.CollectedEgg)
+		const egg1 = this.eggs.create(260, 690, TextureKeys.CollectedEgg)
 		egg1.setScale(0.65)
 		egg1.body.updateFromGameObject()
 

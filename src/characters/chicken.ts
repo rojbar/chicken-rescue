@@ -33,7 +33,7 @@ export class Chicken {
     }
 
     create() {
-        this.player = this.relatedScene.physics.add.sprite(500, 630, TextureKeys.Chicken);
+        this.player = this.relatedScene.physics.add.sprite(50, 680, TextureKeys.Chicken);
         this.player.play(AnimationKeys.ChickenIdle);
         this.player.setSize(40,30);
         this.player.setOffset(5, 20);
@@ -234,7 +234,7 @@ export class Chicken {
     }
     
     doJumping(){
-        this.player.setVelocity(0, -200);
+        this.player.setVelocity(0, -220);
         this.player.play(AnimationKeys.ChickenFlying, true);
     }
 

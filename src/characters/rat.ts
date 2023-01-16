@@ -1,5 +1,6 @@
 import AnimationKeys from "../consts/AnimationKeys";
 import TextureKeys from "../consts/TextureKeys";
+import EnemyInterface from "./EnemyInterface";
 
 enum STATES {
     DEATH = 1,
@@ -7,7 +8,7 @@ enum STATES {
     RUN_RIGHT,
 }
 
-export class Rat {
+export class Rat implements EnemyInterface{
     relatedScene: Phaser.Scene;
     state!: STATES
     rat!: Phaser.Physics.Arcade.Sprite;
@@ -16,8 +17,8 @@ export class Rat {
         this.relatedScene = scene;
     }
 
-    create() {
-        this.rat = this.relatedScene.physics.add.sprite(420, 400, TextureKeys.Rat)
+    create(x :integer, y :integer) {
+        this.rat = this.relatedScene.physics.add.sprite(x, y, TextureKeys.Rat)
         this.rat.setScale(2,2);
         this.rat.setSize(  this.rat.displayWidth-15,      this.rat.displayHeight);
         this.rat.play(AnimationKeys.Running);
@@ -55,14 +56,14 @@ export class Rat {
     }
 
     doRunLeft(){
-        this.rat.setVelocityX(-190);
+        this.rat.setVelocityX(-220);
     }
 
     doRunRight(){
-        this.rat.setVelocityX(+190);
+        this.rat.setVelocityX(+220);
     }
 
-    getRat(){
+    getEnemy(){
         return this.rat;
     }
 }

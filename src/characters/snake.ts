@@ -1,5 +1,6 @@
 import TextureKeys from "../consts/TextureKeys";
 import AnimationKeys from "../consts/AnimationKeys";
+import EnemyInterface from "./EnemyInterface";
 
 enum STATES {
     DEATH = 1,
@@ -9,7 +10,7 @@ enum STATES {
     IDLE,
 }
 
-export class Snake {
+export class Snake implements EnemyInterface{
     relatedScene: Phaser.Scene;
     state: STATES
     snake!: Phaser.Physics.Arcade.Sprite;
@@ -21,8 +22,8 @@ export class Snake {
         this.changeState = true;
     }
 
-    create() {
-        this.snake = this.relatedScene.physics.add.sprite(620, 688, TextureKeys.Snake)
+    create( x :integer, y :integer) {
+        this.snake = this.relatedScene.physics.add.sprite(x, y, TextureKeys.Snake)
         this.snake.setScale(2.5, 2.5);
         this.snake.setSize(this.snake.displayWidth - 15, this.snake.displayHeight - 20);
         this.snake.play(AnimationKeys.SnakeIdle);
@@ -82,14 +83,14 @@ export class Snake {
     }
 
     doRunLeft() {
-        this.snake.setVelocityX(-190);
+        this.snake.setVelocityX(-120);
     }
 
     doRunRight() {
-        this.snake.setVelocityX(+190);
+        this.snake.setVelocityX(+120);
     }
 
-    getSnake() {
+    getEnemy() {
         return this.snake;
     }
 
@@ -111,7 +112,7 @@ export class Snake {
             this.relatedScene.time.addEvent({
                 delay: this.genrateRandomNumber(1000, 3000),                // ms
                 callback: () => {
-                    if (this.getSnake().active) {
+                    if (this.getEnemy().active) {
                         this.snake.play(AnimationKeys.SnakeIdle)
                         this.state = STATES.IDLE
                         this.changeState = true

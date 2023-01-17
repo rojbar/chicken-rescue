@@ -8,10 +8,6 @@ enum STATES {
     RUN_RIGHT,
 }
 
-enum SIDES {
-    RIGHT = 0,
-    LEFT,
-}
 
 export class Rat implements EnemyInterface{
     relatedScene: Phaser.Scene;

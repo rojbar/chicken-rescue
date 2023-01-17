@@ -1,6 +1,5 @@
 import Phaser from 'phaser'
 import TextureKeys from './consts/TextureKeys'
-import LevelOne from './LevelOne'
 
 export default class FinishLevel extends Phaser.Scene{
 

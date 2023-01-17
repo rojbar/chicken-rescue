@@ -144,7 +144,5 @@ export class Snake implements EnemyInterface{
   
     isGoingToFallOfBorder() {
         return  !this.relatedScene.physics.overlap(this.checkBorderBox, this.relatedScene.platforms)
-
-        return false
     }
 }

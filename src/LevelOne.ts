@@ -80,8 +80,8 @@ export default class LevelOne extends Phaser.Scene {
 		
 	}
 
-	private gameOver(minute: integer, score: integer){
-		if(minute == 0 && score != 5){
+	private gameOver(minute: integer, seconds: integer, score: integer){
+		if(minute == 0 && seconds == 0 && score != 5){
 			this.scene.start('finish');
 		}
 	}
@@ -119,13 +119,15 @@ export default class LevelOne extends Phaser.Scene {
 	private updateTime() {
 		this.timer.seconds --
 
-        if (this.timer.seconds <= 0) {
+        if (this.timer.seconds <= 0 && this.timer.minutes > 0) {
 			this.timer.seconds = 60;
 			this.timer.minutes--;
-        }
+        }else{
+			this.gameOver(this.timer.minutes, this.timer.seconds, this.score);
+		}
 
         this.updateTimeText();
-		this.gameOver(this.timer.minutes, this.score);
+		
     }
 
 	private updateTimeText(){

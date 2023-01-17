@@ -56,14 +56,11 @@ export class Snake implements EnemyInterface{
                 break
             case STATES.IDLE:
                 let rng = Math.floor(Math.random() * 2)
-                console.log(rng);
                 if(rng < 1){
                     this.snake.play(AnimationKeys.SnakeAttack)
                     this.state=STATES.ATTACK
-                    console.log('TATAKAE')
                 }else{
                     let aux = Math.floor(Math.random()*2)
-                    console.log(aux);
                     this.snake.play(AnimationKeys.SnakeWalking)
                     if(aux < 1){
                         this.state = STATES.RUN_LEFT

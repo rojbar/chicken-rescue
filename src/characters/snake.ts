@@ -29,10 +29,12 @@ export class Snake implements EnemyInterface{
         this.snake.setSize(this.snake.displayWidth - 15, this.snake.displayHeight - 20);
         this.snake.play(AnimationKeys.SnakeIdle);
         this.snake.setCollideWorldBounds(true);
+        this.createCheckBordersBox()
     }
 
 
     handleState() {
+        this.updateCheckBorderBox(this.state)
         switch (this.state) {
             case STATES.DEATH:
                 break
@@ -76,6 +78,31 @@ export class Snake implements EnemyInterface{
                 this.randomFlip()
         }
     }
+     // Create attack bounds
+    createCheckBordersBox(){
+        this.checkBorderBox = this.relatedScene.add.rectangle(this.snake.x, this.snake.y+30, 20, 10, 0xff0000, 0.5);
+
+        this.checkBorderBox.setOrigin(0.5, 0.5);
+        this.checkBorderBox.setActive(true);
+        this.checkBorderBox.setVisible(false);
+
+        this.relatedScene.physics.world.enable(this.checkBorderBox, Phaser.Physics.Arcade.STATIC_BODY);
+
+    }
+
+    updateCheckBorderBox(side: STATES){
+        switch(side){
+            case STATES.RUN_LEFT:
+                this.checkBorderBox.body.position.x = this.snake.x - 38
+                this.checkBorderBox.body.position.y = this.snake.y +15
+            break
+            case STATES.RUN_RIGHT:
+
+                this.checkBorderBox.body.position.x = this.snake.x + 18
+                this.checkBorderBox.body.position.y = this.snake.y +15    
+            break
+        }
+    }
 
     doRunLeft() {
         this.snake.setVelocityX(-120);
@@ -97,7 +124,7 @@ export class Snake implements EnemyInterface{
         if (this.changeState == true) {
             this.changeState = false
             this.relatedScene.time.addEvent({
-                delay: this.genrateRandomNumber(1000, 3000),                // ms
+                delay: this.gensnakeeRandomNumber(1000, 3000),                // ms
                 callback: () => {
                     if (this.getEnemy().active) {
                         this.snake.play(AnimationKeys.SnakeIdle)
@@ -111,7 +138,7 @@ export class Snake implements EnemyInterface{
         }
     }
 
-    genrateRandomNumber (min: number, max: number) {
+    gensnakeeRandomNumber (min: number, max: number) {
 	    min = Math.ceil(min);
 	    max = Math.floor(max);
 	    return Math.floor(Math.random() * (max - min + 1)) + min; 
@@ -119,7 +146,7 @@ export class Snake implements EnemyInterface{
 
   
     isGoingToFallOfBorder() {
-
+        return  !this.relatedScene.physics.overlap(this.checkBorderBox, this.relatedScene.platforms)
 
         return false
     }

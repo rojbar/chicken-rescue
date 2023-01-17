@@ -23,6 +23,9 @@ export default class LevelOne extends Phaser.Scene {
 		seconds: integer,
 	}
 
+	chickenLifes!: integer
+	chickenLifesText!:Phaser.GameObjects.Text
+
 	constructor() {
 		super('level-one')
 	}
@@ -43,6 +46,8 @@ export default class LevelOne extends Phaser.Scene {
 			minutes: 2,
 			seconds: 30
 		}
+
+		this.chickenLifes = 3
 	}
 
 	create() {
@@ -71,6 +76,8 @@ export default class LevelOne extends Phaser.Scene {
 		
 		this.destroyBox()
 		this.destroyEnemy()
+
+		
 	}
 
 	private gameOver(minute: integer, score: integer){
@@ -99,6 +106,11 @@ export default class LevelOne extends Phaser.Scene {
 		})
 
 		this.timeText = this.add.text(20, 20, 'Time: '+this.timer.minutes+":"+this.timer.seconds, {
+			fontSize: '30px',
+			fontFamily: 'verdana, arial, san-serif'
+		})
+
+		this.chickenLifesText = this.add.text(450, 20, 'Lifes: '+this.chickenLifes, {
 			fontSize: '30px',
 			fontFamily: 'verdana, arial, san-serif'
 		})
@@ -133,7 +145,10 @@ export default class LevelOne extends Phaser.Scene {
 	private createChicken(){
 		this.chicken.create()
 		this.physics.add.collider(this.chicken.getPlayer(), this.platforms)
-		this.physics.add.collider(this.chicken.getPlayer(), this.enemiesGroup, this.chicken.handleEnemyCollission, undefined, this.chicken)
+		this.physics.add.collider(this.chicken.getPlayer(), this.enemiesGroup,() => {
+			this.chicken.handleEnemyCollission()
+			this.chickenLifesText.setText('Lifes: '+ (this.chickenLifes- this.chicken.deaths))
+		} , undefined, this.chicken)
 		this.physics.add.collider(this.chicken.getPlayer(), this.rakesGroup, this.chicken.handleEnemyCollission, undefined, this.chicken)
 		this.physics.add.collider(this.chicken.getPlayer(), this.eggs, this.collectEgg, undefined, this)
 		this.physics.add.collider(this.chicken.getPlayer(), this.destroyableBoxes)
@@ -143,13 +158,16 @@ export default class LevelOne extends Phaser.Scene {
 		let positionsType = {
 			Snake: [ 
 				{ x: 320,y: 680,},
-				{ x: 1200 ,y: 680,},
+				{ x: 820 ,y: 680,},
+				{ x: 480 ,y: 540,},
+				{ x: 400 ,y: 350,},
 			],
 			Rat : [ 
 				{ x: 420,y: 680,},
-				{ x: 420,y: 500,},
-				{ x: 460,y: 680,},
 				{ x: 730 ,y: 680,},
+				{ x: 1200 ,y: 680,},
+				{ x: 730 ,y: 320,},
+
 			],
 		}
 
@@ -195,47 +213,35 @@ export default class LevelOne extends Phaser.Scene {
 		let positions = [
 			{x: 140, y:669, texture: TextureKeys.SmallWoodTile},
 			{x: 450, y:570, texture: TextureKeys.LargeWoodTile},
-			{x: 525, y:650, texture: TextureKeys.SmallWoodTile},
-			{x: 640, y:510, texture: TextureKeys.SmallWoodTile},
-			{x: 850, y:510, texture: TextureKeys.MediumWoodTile},
+			{x: 555, y:640, texture: TextureKeys.SmallWoodTile},
+			{x: 880, y:615, texture: TextureKeys.SmallWoodTile},
+			{x: 1030, y:565, texture: TextureKeys.SmallWoodTile},
+			{x: 1220, y:530, texture: TextureKeys.MediumWoodTile},
+			{x: 780, y:510, texture: TextureKeys.LargeWoodTile},
 			{x: 1040, y:660, texture: TextureKeys.SmallWoodTile},
 			{x: 1010, y:480, texture: TextureKeys.SmallWoodTile},
-			{x: 1140, y:430, texture: TextureKeys.SmallWoodTile},
-			{x: 1010, y:360, texture: TextureKeys.SmallWoodTile},
-			{x: 770, y:370, texture: TextureKeys.LargeWoodTile},
-			{x: 560, y:370, texture: TextureKeys.LargeWoodTile},
-			{x: 345, y:370, texture: TextureKeys.LargeWoodTile},
-			{x: 165, y:335, texture: TextureKeys.SmallWoodTile},
-			{x: 20, y:295, texture: TextureKeys.SmallWoodTile},
-			{x: 145, y:225, texture: TextureKeys.SmallWoodTile},
-			{x: 305, y:200, texture: TextureKeys.MediumWoodTile},
-			{x: 485, y:230, texture: TextureKeys.LargeWoodTile},
-			{x: 705, y:190, texture: TextureKeys.SmallWoodTile},
-			{x: 925, y:230, texture: TextureKeys.LargeWoodTile},
-			{x: 1185, y:140, texture: TextureKeys.SmallWoodTile},
-			{x: 1240, y:140, texture: TextureKeys.SmallWoodTile},	
+			{x: 180, y:530, texture: TextureKeys.SmallWoodTile},
+			{x: 60, y:480, texture: TextureKeys.SmallWoodTile},
+			{x: 220, y:430, texture: TextureKeys.SmallWoodTile},
+			{x: 400, y:380, texture: TextureKeys.LargeWoodTile},
+			{x: 680, y:340, texture: TextureKeys.LargeWoodTile},
+			{x:960, y:300, texture: TextureKeys.LargeWoodTile},
+			{x:1185, y:260, texture: TextureKeys.SmallWoodTile},
+			{x:1250, y:260, texture: TextureKeys.SmallWoodTile},
 		]
 
 		for (let i = 0; i < positions.length; i++) {
 			this.platforms.create(positions[i].x, positions[i].y, positions[i].texture).body.updateFromGameObject()	
 		}
 
-		const wallWoodImage = this.add.image(1215, 160, TextureKeys.WallWoodTile)
+		const wallWoodImage = this.add.image(1215, 280, TextureKeys.WallWoodTile)
 		wallWoodImage.flipX = !wallWoodImage.flipX
-
-		const lastSmall = this.platforms.create(1082, 190, TextureKeys.SmallWoodTile)
-		lastSmall.setScale(0.5)
-		lastSmall.body.updateFromGameObject()
 	}
 
 	private createBoxes() {
 		let positions = [
-			{x: 360, y:680},
-			{x: 538,y:680},
-			{x: 680, y:680},
-			{x: 725,y:680},
-			{x: 770, y:680},
-			{x: 315,y:680},
+			{x: 360,y:680},
+			{x: 780, y:680},
 		]
 
 		for (let i = 0; i < positions.length; i++) {
@@ -245,8 +251,7 @@ export default class LevelOne extends Phaser.Scene {
 
 	private createDestroyableBoxes() {
 		let positions = [
-			{x: 815, y:680},
-			{x: 1255,y:680},
+			{x: 735, y:680},
 		]
 
 		for (let i = 0; i < positions.length; i++) {
@@ -256,12 +261,13 @@ export default class LevelOne extends Phaser.Scene {
 
 	private createRakes() {
 		let positions = [
-			{x: 807, y:485},
-			{x: 1000,y:688},
-			{x: 633, y:345},
-			{x: 810, y:345},
-			{x: 0, y:270},
-			{x: 350, y:175},
+			{x: 780, y:485},
+			{x: 1215, y:505},
+			{x: 1245, y:505},
+			{x: 1275, y:505},
+			{x: 985, y:455},
+			{x: 35, y:455},
+			{x: 930, y:275},
 		]
 
 		for (let i = 0; i < positions.length; i++) {
@@ -272,10 +278,10 @@ export default class LevelOne extends Phaser.Scene {
 	private createEggs() {
 		let positions = [
 			{x: 260, y:690},
-			{x: 525, y:618},
-			{x: 1255, y:680},
-			{x: 1010, y:338},
-			{x: 705, y:166},
+			{x: 740, y:690},
+			{x: 1255, y:690},
+			{x: 380, y:545},
+			{x: 1200, y:235},
 		]
 
 		for (let i = 0; i < positions.length; i++) {
@@ -303,5 +309,4 @@ export default class LevelOne extends Phaser.Scene {
 			}, undefined, this)
 		}
 	}
-
 }

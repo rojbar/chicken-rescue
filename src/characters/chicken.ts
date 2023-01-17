@@ -54,13 +54,16 @@ export class Chicken {
             case STATES.DEATH: 
                 this.player.setPosition(50,660)
                 this.state = STATES.IDLE
-                this.deaths++
                 if(this.deaths == 3) {
                     this.relatedScene.scene.start('finish')
                 }
             break
             case STATES.IDLE:
                 if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
+                    if (!this.player.body.touching.down ){
+                        return
+                    }
+
                     this.doJumping()
 
                     this.state = STATES.JUMPING
@@ -94,6 +97,9 @@ export class Chicken {
 
             case STATES.WALKING_LEFT:
                 if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
+                    if (!this.player.body.touching.down ){
+                        return
+                    }
                     this.doJumping()
 
                     this.state = STATES.JUMPING
@@ -127,6 +133,9 @@ export class Chicken {
 
             case STATES.WALKING_RIGHT:
                 if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
+                    if (!this.player.body.touching.down ){
+                        return
+                    }
                     this.doJumping()
 
                     this.state = STATES.JUMPING
@@ -205,8 +214,8 @@ export class Chicken {
     }
 
     handleEnemyCollission(){
-        console.log('death')
         this.state = STATES.DEATH
+        this.deaths++
     } 
 
     // Create attack bounds
@@ -245,12 +254,13 @@ export class Chicken {
     }
     
     doJumping(){
-        this.player.setVelocity(0, -220);
+        this.player.setVelocity(0, -205);
         this.player.play(AnimationKeys.ChickenFlying, true);
     }
 
     doWalkingLeft(){
         this.player.setVelocityX(-160)
+        this.player.play(AnimationKeys.ChickenWalking, true)
     }
 
     doWalkingRight(){

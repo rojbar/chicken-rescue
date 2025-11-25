@@ -8,7 +8,7 @@ import PreloaderLevelOne from './PreloaderLevelOne'
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	scale:{
-		//mode: Phaser.Scale.FIT, review this option to scale canva
+	//	mode: Phaser.Scale.FIT, 
 		parent: 'app',
 		width: 1280,
 		height:720,
